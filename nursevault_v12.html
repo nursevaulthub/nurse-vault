@@ -1,0 +1,2653 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NurseVault — Study Smarter. Score Higher.</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700;1,900&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+<script src="https://js.paystack.co/v1/inline.js"></script>
+<style>
+:root{
+  --mono:'Space Mono',monospace;
+  --display:'Playfair Display',serif;
+  --body:'Plus Jakarta Sans',sans-serif;
+
+  /* HOME — soft sage green + cream */
+  --home-bg:#f0f7f2;
+  --home-bg2:#e3f0e8;
+  --home-accent:#2d7a4f;
+  --home-accent2:#5ab97a;
+  --home-soft:#c8e6d0;
+
+  /* SHOP — soft pink + rose */
+  --shop-bg:#fdf4f7;
+  --shop-bg2:#fce8f0;
+  --shop-accent:#c2185b;
+  --shop-accent2:#e91e8c;
+  --shop-soft:#f8bbd9;
+
+  /* CART — soft lavender + violet */
+  --cart-bg:#f5f3fe;
+  --cart-bg2:#ede8fc;
+  --cart-accent:#6c3fc5;
+  --cart-accent2:#9c6ef5;
+  --cart-soft:#d4c8f8;
+
+  /* BUNDLES — warm peach + tangerine */
+  --bundle-bg:#fff8f0;
+  --bundle-bg2:#feecd8;
+  --bundle-accent:#e05c00;
+  --bundle-accent2:#ff8c42;
+  --bundle-soft:#ffd4a8;
+
+  /* FAQ — sky blue + teal */
+  --faq-bg:#f0f8ff;
+  --faq-bg2:#e0f2fe;
+  --faq-accent:#0369a1;
+  --faq-accent2:#38bdf8;
+  --faq-soft:#bae6fd;
+
+  /* ADMIN — deep charcoal sophisticated */
+  --admin-bg:#1a1625;
+  --admin-bg2:#231d35;
+  --admin-accent:#a78bfa;
+  --admin-accent2:#c4b5fd;
+  --admin-soft:#4c3a7a;
+
+  /* CURRENT page vars (updated per page) */
+  --pg-bg:#f0f7f2;
+  --pg-bg2:#e3f0e8;
+  --pg-accent:#2d7a4f;
+  --pg-accent2:#5ab97a;
+  --pg-soft:#c8e6d0;
+  --pg-text:#1a2e22;
+  --pg-muted:#6b8f78;
+  --pg-border:rgba(45,122,79,0.18);
+  --pg-card:#ffffff;
+}
+
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{font-family:var(--body);background:var(--pg-bg);color:var(--pg-text);overflow-x:hidden;min-height:100vh;transition:background 0.4s}
+::-webkit-scrollbar{width:5px}
+::-webkit-scrollbar-track{background:var(--pg-bg)}
+::-webkit-scrollbar-thumb{background:var(--pg-accent);border-radius:5px}
+
+/* ── PAGE LOADER ── */
+#pageLoader{
+  position:fixed;inset:0;z-index:9999;
+  background:linear-gradient(135deg,#f0f7f2 0%,#e3f0e8 40%,#f7f0fa 100%);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  transition:opacity 0.6s ease, visibility 0.6s;
+}
+#pageLoader.hidden{opacity:0;visibility:hidden;pointer-events:none}
+.loader-logo{font-family:'Playfair Display',serif;font-size:2.2rem;font-weight:900;color:#1a2e22;margin-bottom:1.5rem;letter-spacing:-1px}
+.loader-logo em{font-style:italic;color:#2d7a4f}
+.loader-logo span{color:#5ab97a}
+.loader-ring{position:relative;width:56px;height:56px;margin-bottom:1rem}
+.loader-ring svg{width:100%;height:100%;animation:spin 1.2s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loader-track{fill:none;stroke:#c8e6d0;stroke-width:4}
+.loader-arc{fill:none;stroke:#2d7a4f;stroke-width:4;stroke-linecap:round;stroke-dasharray:88;stroke-dashoffset:22;animation:arc 1.2s ease-in-out infinite}
+@keyframes arc{0%{stroke-dashoffset:88}50%{stroke-dashoffset:0}100%{stroke-dashoffset:88}}
+.loader-dots{display:flex;gap:6px;margin-top:1.25rem}
+.ldot{width:7px;height:7px;border-radius:50%;background:#2d7a4f;animation:ldots 1.2s ease-in-out infinite}
+.ldot:nth-child(2){animation-delay:0.2s;background:#5ab97a}
+.ldot:nth-child(3){animation-delay:0.4s;background:#c8e6d0}
+@keyframes ldots{0%,100%{transform:scale(0.5);opacity:0.3}50%{transform:scale(1.2);opacity:1}}
+.loader-text{font-size:0.78rem;color:#6b8f78;font-family:'Plus Jakarta Sans',sans-serif;font-weight:500;letter-spacing:0.5px;margin-top:0.75rem;animation:fadepulse 1.5s ease-in-out infinite}
+@keyframes fadepulse{0%,100%{opacity:0.5}50%{opacity:1}}
+
+.page{display:none;min-height:100vh}
+.page.active{display:block;animation:pageIn 0.4s ease}
+@keyframes pageIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+
+/* ── NAV ── */
+nav{
+  position:fixed;top:0;width:100%;z-index:900;
+  background:rgba(255,255,255,0.82);backdrop-filter:blur(20px);
+  border-bottom:1px solid var(--pg-border);
+  height:66px;display:flex;align-items:center;justify-content:space-between;padding:0 5%;
+  transition:border-color 0.4s;
+}
+.logo{font-family:var(--display);font-size:1.6rem;font-weight:900;letter-spacing:-1px;cursor:pointer;color:var(--pg-text)}
+.logo em{font-style:italic;color:var(--pg-accent)}
+.logo span{color:var(--pg-accent2)}
+
+.nav-links{display:flex;gap:4px;align-items:center}
+.nav-link{
+  color:var(--pg-muted);text-decoration:none;font-size:0.85rem;font-weight:600;
+  padding:7px 14px;border-radius:22px;cursor:pointer;transition:all 0.2s;
+  border:none;background:none;font-family:var(--body);
+}
+.nav-link:hover{color:var(--pg-accent);background:rgba(0,0,0,0.04)}
+.nav-link.active{color:var(--pg-accent);background:var(--pg-soft)}
+.nav-cart{
+  background:var(--pg-accent)!important;color:#fff!important;
+  font-weight:700!important;position:relative;
+}
+.nav-cart:hover{opacity:0.9}
+.cart-badge{
+  background:#ff4d6d;color:#fff;font-size:0.58rem;font-weight:700;
+  width:16px;height:16px;border-radius:50%;
+  display:none;align-items:center;justify-content:center;
+  position:absolute;top:-4px;right:-4px;
+}
+
+/* ── OFFER BAR ── */
+.offer-bar{
+  margin-top:66px;
+  background:var(--pg-accent);color:#fff;
+  text-align:center;padding:10px;font-size:0.8rem;font-weight:500;
+  letter-spacing:0.3px;
+}
+.offer-bar strong{font-weight:800}
+
+/* ═══════════════════════════════
+   HOME PAGE — SAGE GREEN
+═══════════════════════════════ */
+#page-home{background:linear-gradient(160deg,#f0f7f2 0%,#e8f4ec 40%,#f7f0fa 100%)}
+
+.hero{
+  min-height:calc(100vh - 66px);
+  position:relative;overflow:hidden;
+  display:flex;align-items:center;
+}
+
+/* Decorative blobs */
+.blob{position:absolute;border-radius:50%;filter:blur(70px);opacity:0.5;pointer-events:none}
+.blob1{width:500px;height:500px;background:#b5e8c8;top:-100px;right:-100px}
+.blob2{width:350px;height:350px;background:#e8c8f0;bottom:-50px;left:-50px}
+.blob3{width:250px;height:250px;background:#c8dff8;top:40%;left:30%;opacity:0.3}
+
+.hero-inner{
+  position:relative;z-index:2;
+  max-width:1200px;margin:0 auto;padding:4rem 5% 3rem;
+  width:100%;display:grid;grid-template-columns:1fr 1fr;gap:4rem;align-items:center;
+}
+
+.hero-left{}
+.hero-badge{
+  display:inline-flex;align-items:center;gap:8px;
+  background:var(--home-accent);color:#fff;
+  padding:6px 16px;border-radius:30px;
+  font-size:0.7rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;
+  margin-bottom:1.5rem;
+}
+.badge-dot{width:6px;height:6px;background:#fff;border-radius:50%;animation:blink 2s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0.2}}
+
+.hero h1{
+  font-family:var(--display);font-size:clamp(2.8rem,5vw,4.5rem);
+  font-weight:900;line-height:1.08;letter-spacing:-2px;margin-bottom:1.25rem;
+  color:#1a2e22;
+}
+.hero h1 .italic{font-style:italic;color:var(--home-accent)}
+.hero h1 .light{font-weight:300;font-style:italic;color:var(--home-accent2)}
+
+.hero-desc{font-size:1rem;color:#4a6b55;line-height:1.75;margin-bottom:2rem;max-width:440px}
+
+.hero-btns{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:2rem}
+.btn-fill{
+  background:var(--pg-accent);color:#fff;
+  padding:13px 26px;border-radius:30px;font-weight:700;font-size:0.9rem;
+  border:none;cursor:pointer;transition:all 0.25s;display:inline-flex;align-items:center;gap:7px;
+  font-family:var(--body);box-shadow:0 4px 16px rgba(45,122,79,0.25);
+}
+.btn-fill:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(45,122,79,0.35)}
+.btn-outline{
+  background:transparent;color:var(--pg-accent);
+  padding:13px 26px;border-radius:30px;font-weight:700;font-size:0.9rem;
+  border:2px solid var(--pg-accent);cursor:pointer;transition:all 0.25s;
+  display:inline-flex;align-items:center;gap:7px;font-family:var(--body);
+}
+.btn-outline:hover{background:var(--pg-accent);color:#fff}
+
+.trust-row{display:flex;gap:1.25rem;flex-wrap:wrap}
+.trust-chip{
+  display:flex;align-items:center;gap:6px;
+  background:rgba(255,255,255,0.7);border:1px solid rgba(45,122,79,0.15);
+  padding:5px 12px;border-radius:20px;font-size:0.76rem;font-weight:500;color:#4a6b55;
+}
+
+/* DEVICES MOCKUP */
+.hero-right{position:relative;height:520px;display:flex;align-items:center;justify-content:center}
+
+/* MacBook */
+.macbook{
+  position:absolute;left:0;top:50%;transform:translateY(-50%);
+  width:340px;z-index:2;
+  filter:drop-shadow(0 30px 50px rgba(0,0,0,0.18));
+}
+.mb-body{
+  background:linear-gradient(145deg,#e8e8e8,#d0d0d0);
+  border-radius:12px 12px 0 0;padding:10px 10px 0;
+}
+.mb-screen{
+  background:#fff;border-radius:8px;overflow:hidden;
+  aspect-ratio:16/10;border:2px solid #ccc;position:relative;
+}
+.mb-bar{background:#f0f0f0;height:22px;display:flex;align-items:center;gap:5px;padding:0 8px;border-bottom:1px solid #e0e0e0}
+.dot{width:8px;height:8px;border-radius:50%}
+.dr{background:#ff5f57}.dy{background:#febc2e}.dg{background:#28c840}
+.mb-url{flex:1;background:#fff;margin:0 6px;height:13px;border-radius:4px;display:flex;align-items:center;padding:0 6px}
+.mb-url span{font-size:0.3rem;color:#999;font-family:var(--mono)}
+.mb-content{padding:8px;display:grid;grid-template-columns:1fr 1fr;gap:5px}
+.mb-card{background:#fdf4f7;border:1px solid #f0c8d8;border-radius:6px;padding:6px;overflow:hidden}
+.mb-card img{width:100%;height:28px;object-fit:cover;border-radius:4px;margin-bottom:4px}
+.mb-card-label{font-size:0.3rem;color:#c2185b;font-weight:700;text-transform:uppercase;letter-spacing:0.5px}
+.mb-card-title{font-size:0.32rem;color:#333;line-height:1.3;margin:2px 0}
+.mb-card-price{font-family:var(--mono);font-size:0.38rem;color:#2d7a4f;font-weight:700}
+.mb-card-btn{background:#2d7a4f;color:#fff;font-size:0.28rem;padding:2px 6px;border-radius:3px;font-weight:700;display:inline-block;margin-top:2px}
+.mb-base{background:linear-gradient(to bottom,#d0d0d0,#b8b8b8);height:8px;border-radius:0 0 4px 4px}
+.mb-foot{background:linear-gradient(to bottom,#c8c8c8,#b0b0b0);height:14px;border-radius:0 0 8px 8px;margin:0 20px}
+.mb-shadow{height:6px;background:radial-gradient(ellipse,rgba(0,0,0,0.2),transparent 70%);margin:0 20px}
+
+/* iPad */
+.ipad{
+  position:absolute;right:0;top:50%;transform:translateY(-45%);
+  width:160px;z-index:3;
+  filter:drop-shadow(0 20px 40px rgba(0,0,0,0.2));
+}
+.ipad-body{
+  background:linear-gradient(145deg,#e0e0e0,#c8c8c8);
+  border-radius:16px;padding:8px;position:relative;
+}
+.ipad-btn-side{position:absolute;right:-3px;top:30px;width:3px;height:28px;background:#bbb;border-radius:2px}
+.ipad-screen{
+  background:#fff;border-radius:10px;overflow:hidden;
+  aspect-ratio:3/4;
+}
+.ipad-bar{background:#f5f3fe;height:18px;display:flex;align-items:center;padding:0 8px;gap:4px}
+.ipad-bar span{font-size:0.28rem;color:#6c3fc5;font-weight:700;font-family:var(--mono)}
+.ipad-content{padding:6px;display:flex;flex-direction:column;gap:4px}
+.ipad-row{background:#fdf4f7;border:1px solid #f0c8d8;border-radius:6px;padding:5px;display:flex;gap:4px}
+.ipad-row img{width:30px;height:30px;object-fit:cover;border-radius:4px;flex-shrink:0}
+.ipad-info{flex:1}
+.ipad-info .lbl{font-size:0.26rem;color:#c2185b;font-weight:700;text-transform:uppercase}
+.ipad-info .ttl{font-size:0.3rem;color:#333;line-height:1.3}
+.ipad-info .pr{font-family:var(--mono);font-size:0.34rem;color:#2d7a4f;font-weight:700}
+
+/* iPhone */
+.iphone{
+  position:absolute;right:-10px;bottom:-20px;
+  width:80px;z-index:4;
+  filter:drop-shadow(0 15px 30px rgba(0,0,0,0.25));
+}
+.iphone-body{
+  background:linear-gradient(145deg,#2d2d2d,#1a1a1a);
+  border-radius:18px;padding:4px;position:relative;
+}
+.iphone-btn{position:absolute;right:-2px;top:20px;width:2px;height:16px;background:#555;border-radius:1px}
+.iphone-screen{
+  background:#fff;border-radius:15px;overflow:hidden;
+  aspect-ratio:9/19.5;
+}
+.iphone-notch{height:10px;background:#1a1a1a;display:flex;justify-content:center;align-items:flex-end}
+.iphone-pill{width:22px;height:4px;background:#333;border-radius:2px;margin-bottom:2px}
+.iphone-content{padding:4px;background:linear-gradient(135deg,#f5f3fe,#fdf4f7)}
+.iphone-header{font-size:0.28rem;color:#6c3fc5;font-weight:700;font-family:var(--mono);margin-bottom:3px}
+.iphone-card{background:#fff;border-radius:4px;padding:3px;margin-bottom:2px;border:1px solid #e8dff8}
+.iphone-card .lbl{font-size:0.22rem;color:#c2185b;font-weight:700}
+.iphone-card .val{font-size:0.26rem;color:#333}
+.iphone-card .money{font-family:var(--mono);font-size:0.28rem;color:#2d7a4f;font-weight:700}
+.iphone-pay{background:linear-gradient(135deg,#2d7a4f,#5ab97a);border-radius:3px;padding:3px;text-align:center;font-size:0.24rem;color:#fff;font-weight:700}
+
+/* Floating books */
+.float-books{position:absolute;top:0;left:0;right:0;bottom:0;pointer-events:none;z-index:1;overflow:hidden}
+.fbook{
+  position:absolute;border-radius:14px;overflow:hidden;
+  box-shadow:0 24px 60px rgba(0,0,0,0.15),0 0 0 1px rgba(255,255,255,0.5);
+  animation:floatY 8s ease-in-out infinite;
+}
+.fbook img{width:100%;height:100%;object-fit:cover;display:block}
+.fbook::after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,transparent 45%,rgba(240,247,242,0.55) 100%)}
+/* shadow under each book */
+.fbook::before{content:'';position:absolute;bottom:-14px;left:10%;width:80%;height:14px;background:rgba(0,0,0,0.12);border-radius:50%;filter:blur(6px);z-index:-1}
+.fb1{width:88px;height:112px;top:10%;left:3%;animation-delay:0s;transform:rotate(-6deg)}
+.fb2{width:72px;height:93px;top:6%;left:46%;animation-delay:-3.5s;transform:rotate(5deg)}
+.fb3{width:80px;height:104px;bottom:10%;left:4%;animation-delay:-5.5s;transform:rotate(-4deg)}
+.fb4{width:66px;height:86px;bottom:6%;left:48%;animation-delay:-2s;transform:rotate(7deg)}
+@keyframes floatY{0%,100%{transform:translateY(0) rotate(var(--rot,0deg))}50%{transform:translateY(-18px) rotate(var(--rot,0deg))}}
+
+/* Stats strip */
+.stats-strip{
+  background:#fff;border-top:1px solid var(--home-soft);border-bottom:1px solid var(--home-soft);
+  padding:1.5rem 5%;
+}
+.stats-strip-inner{max-width:1000px;margin:0 auto;display:grid;grid-template-columns:repeat(4,1fr);gap:1rem}
+.sstat{text-align:center;padding:0.75rem}
+.sstat-num{font-family:var(--mono);font-size:1.8rem;font-weight:700;color:var(--home-accent);display:block}
+.sstat-label{font-size:0.76rem;color:#6b8f78;margin-top:3px;font-weight:500}
+
+/* HOW section REMOVED — replaced with feature strip */
+/* ── FEATURE STRIP (green, professional) ── */
+.feature-strip{
+  background:linear-gradient(135deg,#1a3d28 0%,#2d7a4f 50%,#1f5c38 100%);
+  padding:4.5rem 5%;position:relative;overflow:hidden;
+}
+.feature-strip::before{
+  content:'';position:absolute;top:-60px;right:-60px;
+  width:300px;height:300px;border-radius:50%;
+  background:rgba(255,255,255,0.04);pointer-events:none;
+}
+.feature-strip::after{
+  content:'';position:absolute;bottom:-80px;left:10%;
+  width:200px;height:200px;border-radius:50%;
+  background:rgba(90,185,122,0.1);pointer-events:none;
+}
+.feature-strip-inner{max-width:1100px;margin:0 auto;position:relative;z-index:1}
+.fs-eyebrow{font-size:0.7rem;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:#5ab97a;margin-bottom:0.75rem}
+.fs-title{font-family:'Playfair Display',serif;font-size:clamp(1.8rem,3.5vw,2.6rem);font-weight:900;color:#fff;line-height:1.1;letter-spacing:-1px;margin-bottom:0.6rem}
+.fs-title em{font-style:italic;color:#a8f0c0}
+.fs-sub{font-size:0.92rem;color:rgba(255,255,255,0.65);max-width:460px;line-height:1.7;margin-bottom:3rem}
+.feature-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:1.25rem}
+.fc{
+  background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.1);
+  border-radius:16px;padding:1.5rem;
+  transition:background 0.25s,transform 0.25s;
+}
+.fc:hover{background:rgba(255,255,255,0.11);transform:translateY(-3px)}
+.fc-icon{font-size:1.75rem;margin-bottom:0.75rem}
+.fc h4{font-size:0.92rem;font-weight:700;color:#fff;margin-bottom:0.4rem}
+.fc p{font-size:0.8rem;color:rgba(255,255,255,0.6);line-height:1.6}
+.fc-pill{
+  display:inline-flex;align-items:center;gap:4px;
+  background:rgba(90,185,122,0.2);border:1px solid rgba(90,185,122,0.3);
+  color:#a8f0c0;font-size:0.62rem;font-weight:700;letter-spacing:0.5px;
+  padding:3px 10px;border-radius:20px;margin-top:0.6rem;text-transform:uppercase;
+}
+
+/* Pills for other pages */
+.pill{display:inline-block;padding:5px 14px;border-radius:20px;font-size:0.68rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;margin-bottom:1rem;}
+.pill-green{background:#e3f0e8;color:#2d7a4f}
+.pill-pink{background:#fce8f0;color:#c2185b}
+.pill-lavender{background:#ede8fc;color:#6c3fc5}
+.pill-peach{background:#feecd8;color:#e05c00}
+.pill-sky{background:#e0f2fe;color:#0369a1}
+h2.section-title{font-family:var(--display);font-size:clamp(2rem,3.5vw,2.8rem);font-weight:900;line-height:1.1;letter-spacing:-1px;margin-bottom:0.75rem;color:#1a2e22;}
+h2.section-title em{font-style:italic;color:var(--home-accent)}
+.section-sub{font-size:0.95rem;color:#4a6b55;max-width:500px;line-height:1.7;margin-bottom:2.5rem}
+
+/* ═══════════════════════════════
+   SHOP PAGE — SOFT PINK
+═══════════════════════════════ */
+#page-shop{background:linear-gradient(160deg,#fdf4f7 0%,#fce8f0 60%,#fff8f0 100%)}
+
+.shop-hero{
+  padding:5rem 5% 3rem;
+  max-width:1200px;margin:0 auto;
+}
+.shop-hero-text h1{
+  font-family:var(--display);font-size:clamp(2.2rem,4vw,3.5rem);
+  font-weight:900;line-height:1.1;letter-spacing:-1.5px;color:#3d0e1e;margin-bottom:0.75rem;
+}
+.shop-hero-text h1 em{font-style:italic;color:#c2185b}
+.shop-hero-text p{font-size:0.95rem;color:#8b4d64;max-width:480px;line-height:1.7;margin-bottom:1.5rem}
+
+.filter-bar{
+  max-width:1200px;margin:0 auto;padding:0 5% 1.5rem;
+  display:flex;gap:8px;flex-wrap:wrap;align-items:center;justify-content:space-between;
+}
+.ftab{
+  background:rgba(255,255,255,0.7);border:1.5px solid #f0c8d8;
+  color:#8b4d64;padding:8px 18px;border-radius:24px;
+  font-size:0.8rem;font-weight:600;cursor:pointer;transition:all 0.2s;
+  font-family:var(--body);
+}
+.ftab.active,.ftab:hover{background:#c2185b;border-color:#c2185b;color:#fff}
+.count-label{font-size:0.78rem;color:#8b4d64;font-weight:500}
+
+.products-grid{
+  max-width:1200px;margin:0 auto;padding:0 5% 4rem;
+  display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1.5rem;
+}
+.pcard{
+  background:#fff;border:1.5px solid #f0c8d8;border-radius:20px;overflow:hidden;
+  transition:transform 0.25s,box-shadow 0.25s,border-color 0.25s;cursor:pointer;
+  box-shadow:0 2px 12px rgba(194,24,91,0.06);
+}
+.pcard:hover{transform:translateY(-6px);box-shadow:0 16px 40px rgba(194,24,91,0.14);border-color:#e91e8c}
+.pcard-img{width:100%;height:155px;position:relative;overflow:hidden}
+.pcard-img img{width:100%;height:100%;object-fit:cover;transition:transform 0.4s}
+.pcard:hover .pcard-img img{transform:scale(1.06)}
+.pcard-overlay{position:absolute;inset:0;background:linear-gradient(180deg,transparent 40%,rgba(253,244,247,0.9) 100%)}
+.type-badge{
+  position:absolute;top:10px;left:10px;
+  padding:4px 10px;border-radius:20px;font-size:0.62rem;font-weight:700;letter-spacing:0.5px;
+}
+.badge-notes{background:#e3f0e8;color:#2d7a4f;border:1px solid #b5d9c0}
+.badge-questions{background:#fff3e0;color:#e05c00;border:1px solid #ffd4a8}
+.unit-tag{
+  position:absolute;top:10px;right:10px;
+  background:rgba(255,255,255,0.9);border:1px solid #f0c8d8;
+  color:#c2185b;font-size:0.58rem;font-weight:700;
+  padding:3px 8px;border-radius:6px;text-transform:uppercase;letter-spacing:0.5px;
+}
+
+.pcard-body{padding:1.1rem}
+.pcard-title{
+  font-family:var(--display);font-size:0.98rem;font-weight:700;line-height:1.3;
+  color:#3d0e1e;margin-bottom:0.35rem;
+}
+.pcard-desc{font-size:0.76rem;color:#8b4d64;line-height:1.55;margin-bottom:0.75rem}
+.pcard-tags{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:0.85rem}
+.ptag{
+  background:#fce8f0;border:1px solid #f0c8d8;
+  color:#c2185b;font-size:0.6rem;padding:2px 8px;border-radius:6px;font-weight:500;
+}
+.pcard-footer{
+  display:flex;align-items:center;justify-content:space-between;
+  border-top:1px solid #fce8f0;padding-top:0.85rem;
+}
+.pcard-price-wrap{}
+.pcard-price{font-family:var(--mono);font-size:1.35rem;font-weight:700}
+.price-notes{color:#2d7a4f}
+.price-questions{color:#e05c00}
+.price-sub{font-size:0.62rem;color:#8b4d64;display:block;margin-top:1px}
+.add-btn{
+  padding:8px 16px;border-radius:22px;font-size:0.78rem;font-weight:700;
+  border:none;cursor:pointer;transition:all 0.2s;font-family:var(--body);
+  display:flex;align-items:center;gap:5px;
+}
+.add-notes{background:#2d7a4f;color:#fff;box-shadow:0 2px 10px rgba(45,122,79,0.25)}
+.add-questions{background:#e05c00;color:#fff;box-shadow:0 2px 10px rgba(224,92,0,0.25)}
+.add-btn:hover{transform:scale(1.04)}
+.add-btn.added{background:#e3f0e8;color:#2d7a4f;border:1.5px solid #2d7a4f}
+
+/* ═══════════════════════════════
+   CART PAGE — SOFT LAVENDER
+═══════════════════════════════ */
+#page-cart{background:linear-gradient(160deg,#f5f3fe 0%,#ede8fc 60%,#fce8f0 100%)}
+
+.cart-top{
+  padding:3.5rem 5% 2rem;max-width:1200px;margin:0 auto;
+}
+.cart-top h1{font-family:var(--display);font-size:2.5rem;font-weight:900;letter-spacing:-1px;color:#2d1b69}
+.cart-top h1 em{font-style:italic;color:#6c3fc5}
+.cart-top p{font-size:0.88rem;color:#7c6aab;margin-top:6px}
+
+.cart-layout{
+  max-width:1200px;margin:0 auto;padding:0 5% 4rem;
+  display:grid;grid-template-columns:1fr 370px;gap:2rem;align-items:start;
+}
+.cart-items-list{display:flex;flex-direction:column;gap:12px}
+.ci{
+  background:#fff;border:1.5px solid #d4c8f8;border-radius:16px;
+  padding:1.1rem;display:flex;gap:1rem;align-items:flex-start;
+  box-shadow:0 2px 12px rgba(108,63,197,0.06);transition:border-color 0.2s;
+}
+.ci:hover{border-color:#9c6ef5}
+.ci-img{width:68px;height:76px;border-radius:10px;object-fit:cover;flex-shrink:0}
+.ci-info{flex:1}
+.ci-type{font-size:0.65rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:3px}
+.ci-type.n{color:#2d7a4f}.ci-type.q{color:#e05c00}.ci-type.b{color:#6c3fc5}
+.ci-title{font-family:var(--display);font-size:0.9rem;font-weight:700;color:#2d1b69;line-height:1.3;margin-bottom:5px}
+.ci-badge{display:inline-block;background:#ede8fc;color:#6c3fc5;font-size:0.6rem;padding:2px 8px;border-radius:6px;font-weight:600}
+.ci-price{font-family:var(--mono);font-size:1.05rem;font-weight:700;color:#6c3fc5;white-space:nowrap}
+.ci-rm{
+  background:#fff0f3;border:1.5px solid #ffd4de;color:#e63956;
+  font-size:0.7rem;padding:4px 10px;border-radius:8px;cursor:pointer;
+  transition:all 0.2s;white-space:nowrap;font-family:var(--body);font-weight:600;
+}
+.ci-rm:hover{background:#ffe0e6}
+
+.cart-empty-wrap{
+  background:#fff;border:1.5px solid #d4c8f8;border-radius:20px;
+  padding:3.5rem;text-align:center;
+}
+.cart-empty-wrap .icon{font-size:3.5rem;margin-bottom:1rem;opacity:0.5}
+.cart-empty-wrap h3{font-family:var(--display);font-size:1.4rem;font-weight:700;color:#2d1b69;margin-bottom:0.5rem}
+.cart-empty-wrap p{font-size:0.85rem;color:#7c6aab;margin-bottom:1.5rem}
+
+.cart-summary-card{
+  background:#fff;border:1.5px solid #d4c8f8;border-radius:20px;
+  padding:1.75rem;position:sticky;top:82px;
+  box-shadow:0 4px 20px rgba(108,63,197,0.08);
+}
+.summary-head{font-family:var(--display);font-size:1.2rem;font-weight:700;color:#2d1b69;margin-bottom:1.25rem}
+.srow{display:flex;justify-content:space-between;font-size:0.83rem;padding:7px 0;border-bottom:1px solid #f0ebff}
+.srow:last-of-type{border:none}
+.srow .sl{color:#7c6aab;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:200px}
+.srow .sv{font-family:var(--mono);font-weight:700;color:#2d1b69;flex-shrink:0}
+.discount-pill{
+  background:#e3f0e8;border:1px solid #b5d9c0;border-radius:10px;
+  padding:0.7rem;margin:0.75rem 0;font-size:0.78rem;color:#2d7a4f;font-weight:600;
+  display:flex;gap:6px;align-items:center;
+}
+.total-box{
+  background:linear-gradient(135deg,#ede8fc,#f5f3fe);border:1.5px solid #d4c8f8;
+  border-radius:12px;padding:1rem;margin:0.75rem 0;
+  display:flex;justify-content:space-between;align-items:center;
+}
+.total-label{font-weight:700;font-size:0.88rem;color:#2d1b69}
+.total-val{font-family:var(--mono);font-size:1.6rem;font-weight:700;color:#6c3fc5}
+.checkout-btn{
+  width:100%;background:linear-gradient(135deg,#6c3fc5,#9c6ef5);
+  color:#fff;border:none;padding:14px;border-radius:30px;
+  font-family:var(--body);font-weight:800;font-size:0.95rem;cursor:pointer;
+  transition:all 0.25s;margin-top:6px;
+  box-shadow:0 4px 16px rgba(108,63,197,0.3);
+}
+.checkout-btn:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(108,63,197,0.4)}
+.checkout-btn:disabled{opacity:0.4;cursor:not-allowed;transform:none}
+
+/* CHECKOUT */
+.checkout-wrap{max-width:580px;margin:0 auto;padding:2rem 5% 4rem}
+.back-link{background:none;border:none;color:#7c6aab;cursor:pointer;font-size:0.82rem;display:flex;align-items:center;gap:5px;margin-bottom:1.5rem;font-family:var(--body)}
+.checkout-card{background:#fff;border:1.5px solid #d4c8f8;border-radius:20px;padding:2rem;box-shadow:0 4px 20px rgba(108,63,197,0.08)}
+.co-title{font-family:var(--display);font-size:1.4rem;font-weight:700;color:#2d1b69;margin-bottom:4px}
+.co-sub{font-size:0.82rem;color:#7c6aab;margin-bottom:1.5rem;border-bottom:1px solid #f0ebff;padding-bottom:1.25rem}
+.order-mini{background:#f5f3fe;border-radius:12px;padding:1rem;margin-bottom:1.25rem;font-size:0.82rem}
+.om-row{display:flex;justify-content:space-between;padding:3px 0}
+.om-row .n{color:#7c6aab;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:260px}
+.om-row .p{font-family:var(--mono);color:#6c3fc5;font-weight:700;flex-shrink:0}
+.om-total{display:flex;justify-content:space-between;border-top:1px solid #d4c8f8;margin-top:8px;padding-top:8px;font-weight:700}
+.om-total .p{font-family:var(--mono);color:#e05c00;font-size:1.1rem}
+
+.form-group{margin-bottom:1.1rem}
+.form-group label{display:block;font-size:0.73rem;font-weight:700;color:#6c3fc5;margin-bottom:5px;text-transform:uppercase;letter-spacing:0.5px}
+.form-group input{
+  width:100%;background:#faf9ff;border:1.5px solid #d4c8f8;
+  color:#2d1b69;padding:11px 14px;border-radius:10px;
+  font-size:0.88rem;font-family:var(--body);transition:border-color 0.2s;
+}
+.form-group input:focus{outline:none;border-color:#6c3fc5;background:#fff}
+.form-group input::placeholder{color:#b8aed8}
+
+.terms-row{display:flex;gap:8px;align-items:flex-start;margin-bottom:1.1rem;font-size:0.77rem;color:#7c6aab}
+.terms-row input{width:15px;height:15px;flex-shrink:0;margin-top:2px;accent-color:#6c3fc5}
+.terms-row a{color:#6c3fc5;text-decoration:underline;cursor:pointer}
+
+.pay-btn{
+  width:100%;background:linear-gradient(135deg,#2d7a4f,#5ab97a);
+  color:#fff;border:none;padding:15px;border-radius:30px;
+  font-family:var(--body);font-weight:800;font-size:0.98rem;cursor:pointer;
+  transition:all 0.25s;display:flex;align-items:center;justify-content:center;gap:8px;
+  box-shadow:0 4px 16px rgba(45,122,79,0.25);
+}
+.pay-btn:hover:not(:disabled){transform:translateY(-2px);box-shadow:0 8px 24px rgba(45,122,79,0.35)}
+.pay-btn:disabled{opacity:0.5;cursor:not-allowed}
+
+.discount-bar{background:#e3f0e8;border:1px solid #b5d9c0;border-radius:8px;padding:0.7rem 1rem;margin-bottom:1rem;font-size:0.78rem;color:#2d7a4f;font-weight:600;display:none}
+
+.success-box{display:none;text-align:center;padding:1.5rem 0}
+.success-box.show{display:block}
+.success-icon{font-size:3.5rem;margin-bottom:0.75rem;animation:popIn 0.5s ease}
+@keyframes popIn{from{transform:scale(0)}to{transform:scale(1)}}
+.success-box h3{font-family:var(--display);font-size:1.5rem;font-weight:700;color:#2d7a4f;margin-bottom:0.5rem}
+.success-box p{font-size:0.83rem;color:#7c6aab;margin-bottom:1.5rem;line-height:1.65}
+.dl-btn{
+  background:linear-gradient(135deg,#e05c00,#ff8c42);
+  color:#fff;border:none;padding:13px 28px;border-radius:30px;
+  font-weight:800;font-size:0.9rem;cursor:pointer;transition:all 0.25s;font-family:var(--body);
+}
+.dl-btn:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(224,92,0,0.35)}
+
+/* ═══════════════════════════════
+   BUNDLES PAGE — WARM PEACH
+═══════════════════════════════ */
+#page-bundles{background:linear-gradient(160deg,#fff8f0 0%,#feecd8 60%,#fdf4f7 100%)}
+
+.bundles-top{padding:4rem 5% 2.5rem;max-width:1100px;margin:0 auto}
+.bundles-top h1{font-family:var(--display);font-size:clamp(2.2rem,4vw,3.2rem);font-weight:900;letter-spacing:-1.5px;color:#3d1800;margin-bottom:0.75rem}
+.bundles-top h1 em{font-style:italic;color:#e05c00}
+.bundles-top p{font-size:0.95rem;color:#8b4d2a;max-width:480px;line-height:1.7}
+
+.bundle-grid{max-width:1100px;margin:0 auto;padding:0 5% 4rem;display:grid;grid-template-columns:1fr 1fr;gap:2rem}
+.bcard{
+  background:#fff;border:2px solid #ffd4a8;border-radius:24px;padding:2.25rem;
+  position:relative;overflow:hidden;transition:transform 0.25s,box-shadow 0.25s;
+  box-shadow:0 4px 20px rgba(224,92,0,0.08);
+}
+.bcard:hover{transform:translateY(-5px);box-shadow:0 16px 45px rgba(224,92,0,0.15)}
+.bcard.featured{border-color:#ff8c42;box-shadow:0 4px 30px rgba(255,140,66,0.2)}
+.bcard-star-banner{
+  background:linear-gradient(135deg,#e05c00,#ff8c42);color:#fff;
+  font-size:0.65rem;font-weight:800;letter-spacing:2px;text-transform:uppercase;
+  padding:5px 18px;text-align:center;margin:-2.25rem -2.25rem 1.75rem;
+}
+.bcard-lock{position:absolute;top:1.5rem;right:1.5rem;font-size:1.5rem;opacity:0.35}
+.bcard-icon{font-size:2.5rem;margin-bottom:0.75rem}
+.bcard-title{font-family:var(--display);font-size:1.5rem;font-weight:900;letter-spacing:-0.5px;color:#3d1800;margin-bottom:0.5rem}
+.bcard-sub{font-size:0.85rem;color:#8b4d2a;line-height:1.65;margin-bottom:1.5rem}
+.bcard-includes{list-style:none;display:flex;flex-direction:column;gap:7px;margin-bottom:1.75rem}
+.bcard-includes li{display:flex;align-items:flex-start;gap:8px;font-size:0.83rem;color:#5a3018}
+.bcard-includes li::before{content:'✓';color:#e05c00;font-weight:700;flex-shrink:0}
+.bundle-price-row{display:flex;align-items:baseline;gap:10px;margin-bottom:4px}
+.bp-main{font-family:var(--mono);font-size:2.2rem;font-weight:700;color:#e05c00}
+.bp-orig{font-family:var(--mono);font-size:0.95rem;text-decoration:line-through;color:#c4a08a}
+.bp-save{font-size:0.78rem;color:#2d7a4f;font-weight:700;margin-bottom:1.5rem}
+.bcard-btn{
+  width:100%;background:linear-gradient(135deg,#e05c00,#ff8c42);
+  color:#fff;border:none;padding:14px;border-radius:30px;
+  font-family:var(--body);font-weight:700;font-size:0.92rem;cursor:pointer;
+  transition:all 0.25s;display:flex;align-items:center;justify-content:center;gap:8px;
+  box-shadow:0 4px 16px rgba(224,92,0,0.3);
+}
+.bcard-btn:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(224,92,0,0.4)}
+.bcard-btn.soon{opacity:0.4;cursor:not-allowed}
+.bcard-btn.soon:hover{transform:none;box-shadow:none}
+
+/* ═══════════════════════════════
+   FAQ PAGE — SKY BLUE
+═══════════════════════════════ */
+#page-faq{background:linear-gradient(160deg,#f0f8ff 0%,#e0f2fe 60%,#f5f3fe 100%)}
+
+.faq-top{padding:4rem 5% 2.5rem;max-width:900px;margin:0 auto}
+.faq-top h1{font-family:var(--display);font-size:clamp(2.2rem,4vw,3rem);font-weight:900;letter-spacing:-1.5px;color:#0c2f50;margin-bottom:0.75rem}
+.faq-top h1 em{font-style:italic;color:#0369a1}
+.faq-top p{font-size:0.95rem;color:#3d7a9c;max-width:480px;line-height:1.7}
+
+.faq-list{max-width:820px;margin:0 auto;padding:0 5% 4rem}
+.faq-item{background:#fff;border:1.5px solid #bae6fd;border-radius:14px;margin-bottom:10px;overflow:hidden;box-shadow:0 2px 10px rgba(3,105,161,0.05)}
+.faq-q{
+  display:flex;justify-content:space-between;align-items:center;
+  padding:1.15rem 1.25rem;cursor:pointer;font-weight:600;font-size:0.9rem;color:#0c2f50;
+  transition:background 0.2s;
+}
+.faq-q:hover{background:#f0f8ff}
+.faq-arr{transition:transform 0.25s;color:#38bdf8;font-size:0.9rem;flex-shrink:0}
+.faq-q.open .faq-arr{transform:rotate(180deg)}
+.faq-a{font-size:0.84rem;color:#3d7a9c;line-height:1.75;max-height:0;overflow:hidden;transition:max-height 0.35s ease,padding 0.2s;padding:0 1.25rem}
+.faq-a.open{max-height:250px;padding-bottom:1.25rem}
+
+/* ═══════════════════════════════
+   ADMIN PAGE — DARK ELEGANT
+═══════════════════════════════ */
+#page-admin{background:var(--admin-bg)}
+
+.admin-login{
+  max-width:420px;margin:0 auto;padding:7rem 5% 3rem;text-align:center;
+}
+.al-card{
+  background:var(--admin-bg2);border:1px solid rgba(167,139,250,0.2);
+  border-radius:20px;padding:2.5rem;
+}
+.al-lock{font-size:3rem;margin-bottom:1rem}
+.al-card h2{font-family:var(--display);font-size:1.4rem;font-weight:700;color:#e2d9ff;margin-bottom:0.5rem}
+.al-card p{font-size:0.82rem;color:#9d8ec4;margin-bottom:1.75rem;line-height:1.6}
+.al-input{
+  width:100%;background:rgba(255,255,255,0.05);border:1.5px solid rgba(167,139,250,0.25);
+  color:#e2d9ff;padding:12px 16px;border-radius:10px;font-size:0.9rem;
+  font-family:var(--body);margin-bottom:1rem;transition:border-color 0.2s;
+}
+.al-input:focus{outline:none;border-color:var(--admin-accent)}
+.al-btn{
+  width:100%;background:linear-gradient(135deg,#6c3fc5,#9c6ef5);
+  color:#fff;border:none;padding:13px;border-radius:30px;
+  font-family:var(--body);font-weight:700;cursor:pointer;transition:all 0.2s;
+}
+.al-btn:hover{transform:translateY(-2px)}
+.al-err{color:#f87171;font-size:0.78rem;margin-top:0.75rem;display:none}
+
+.admin-dash{display:none;height:calc(100vh - 66px)}
+.admin-dash.open{display:flex}
+
+.admin-sidebar{
+  width:220px;background:var(--admin-bg2);border-right:1px solid rgba(167,139,250,0.12);
+  padding:1.5rem 0;flex-shrink:0;display:flex;flex-direction:column;
+}
+.admin-brand{padding:0 1.25rem 1.25rem;border-bottom:1px solid rgba(167,139,250,0.1);margin-bottom:0.75rem}
+.admin-brand h3{font-family:var(--display);font-size:1rem;font-weight:700;color:#e2d9ff}
+.admin-brand h3 em{font-style:italic;color:#c4b5fd}
+.admin-brand p{font-family:var(--mono);font-size:0.62rem;color:#7c6aab;margin-top:2px}
+.admin-nav{padding:0 0.75rem;flex:1}
+.alink{
+  display:flex;align-items:center;gap:8px;padding:9px 12px;border-radius:8px;
+  font-size:0.82rem;color:#9d8ec4;cursor:pointer;transition:all 0.15s;margin-bottom:2px;
+}
+.alink:hover,.alink.active{background:rgba(167,139,250,0.1);color:#c4b5fd}
+.alink.active{font-weight:700}
+.admin-signout{margin:0 0.75rem;padding:1.25rem 0 0;border-top:1px solid rgba(167,139,250,0.1)}
+.signout-btn{
+  width:100%;background:rgba(248,113,113,0.1);border:1px solid rgba(248,113,113,0.2);
+  color:#f87171;padding:8px;border-radius:8px;cursor:pointer;font-size:0.78rem;font-family:var(--body);
+}
+
+.admin-main{flex:1;overflow-y:auto}
+.admin-topbar{
+  background:var(--admin-bg2);border-bottom:1px solid rgba(167,139,250,0.12);
+  padding:1rem 2rem;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:10;
+}
+.admin-topbar h2{font-family:var(--display);font-size:1.05rem;font-weight:700;color:#e2d9ff}
+.admin-topbar h2 span{font-style:italic;color:#c4b5fd}
+.admin-clock{font-family:var(--mono);font-size:0.68rem;color:#7c6aab}
+
+.apanel{display:none;padding:2rem}
+.apanel.active{display:block}
+
+.astat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-bottom:2rem}
+.astat{background:var(--admin-bg2);border:1px solid rgba(167,139,250,0.12);border-radius:12px;padding:1.2rem}
+.astat-label{font-size:0.65rem;text-transform:uppercase;letter-spacing:1px;color:#7c6aab;margin-bottom:4px}
+.astat-val{font-family:var(--mono);font-size:1.5rem;font-weight:700}
+.av-green{color:#34d399}.av-purple{color:#c4b5fd}.av-sky{color:#7dd3fc}.av-red{color:#f87171}
+
+.atbl-card{background:var(--admin-bg2);border:1px solid rgba(167,139,250,0.1);border-radius:14px;overflow:hidden}
+.atbl-head{padding:1rem 1.5rem;border-bottom:1px solid rgba(167,139,250,0.08);display:flex;justify-content:space-between;align-items:center}
+.atbl-head h4{font-size:0.88rem;font-weight:700;color:#e2d9ff}
+.atbl-head span{font-size:0.72rem;color:#7c6aab}
+table{width:100%;border-collapse:collapse}
+th{font-size:0.65rem;color:#7c6aab;text-transform:uppercase;letter-spacing:0.5px;padding:9px 1.25rem;text-align:left;border-bottom:1px solid rgba(167,139,250,0.08)}
+td{font-size:0.8rem;color:#c4b5fd;padding:10px 1.25rem;border-bottom:1px solid rgba(167,139,250,0.04)}
+tr:last-child td{border:none}
+tr:hover td{background:rgba(167,139,250,0.04)}
+.sbadge{padding:3px 8px;border-radius:4px;font-size:0.65rem;font-weight:700;text-transform:uppercase;letter-spacing:0.5px}
+.s-ok{background:rgba(52,211,153,0.12);color:#34d399}
+.s-pend{background:rgba(251,191,36,0.12);color:#fbbf24}
+.s-fail{background:rgba(248,113,113,0.12);color:#f87171}
+
+.ce-card{background:var(--admin-bg2);border:1px solid rgba(167,139,250,0.12);border-radius:12px;padding:1.25rem;margin-bottom:1rem}
+.ce-head{display:flex;gap:8px;align-items:center;margin-bottom:1rem;font-size:0.8rem;font-weight:700;color:#e2d9ff}
+.ce-form{display:grid;grid-template-columns:1fr 1fr;gap:0.75rem}
+.ce-form .span2{grid-column:1/-1}
+.ce-label{font-size:0.62rem;color:#7c6aab;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;font-weight:600}
+.ce-input{
+  width:100%;background:rgba(255,255,255,0.04);border:1.5px solid rgba(167,139,250,0.2);
+  color:#e2d9ff;padding:9px 12px;border-radius:8px;font-size:0.8rem;font-family:var(--body);
+  transition:border-color 0.2s;
+}
+.ce-input:focus{outline:none;border-color:var(--admin-accent)}
+textarea.ce-input{resize:vertical;min-height:56px}
+.ce-save-btn{
+  background:linear-gradient(135deg,#6c3fc5,#9c6ef5);color:#fff;border:none;
+  padding:7px 16px;border-radius:8px;font-size:0.78rem;font-weight:700;cursor:pointer;margin-top:0.75rem;font-family:var(--body);
+}
+.ce-ok{font-size:0.72rem;color:#34d399;margin-left:8px;display:none}
+
+.config-card{background:var(--admin-bg2);border:1px solid rgba(167,139,250,0.15);border-radius:14px;padding:1.5rem;margin-top:1rem}
+.config-head{font-size:0.88rem;font-weight:700;color:#c4b5fd;margin-bottom:1rem;display:flex;align-items:center;gap:6px}
+.config-form{display:grid;grid-template-columns:1fr 1fr;gap:0.75rem}
+.config-form .span2{grid-column:1/-1}
+
+/* ── FOOTER ── */
+footer{
+  background:rgba(255,255,255,0.7);border-top:1.5px solid var(--pg-soft);
+  padding:3rem 5% 2rem;
+}
+.footer-inner{max-width:1200px;margin:0 auto;display:grid;grid-template-columns:2fr 1fr 1fr;gap:3rem;margin-bottom:1.5rem}
+.footer-logo{font-family:var(--display);font-size:1.4rem;font-weight:900;letter-spacing:-0.5px;margin-bottom:0.5rem}
+.footer-logo em{font-style:italic;color:var(--pg-accent)}
+.footer-brand p{font-size:0.8rem;color:var(--pg-muted);line-height:1.65;max-width:250px}
+.footer-col h5{font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--pg-accent);margin-bottom:0.75rem}
+.footer-col a{display:block;font-size:0.8rem;color:var(--pg-muted);text-decoration:none;margin-bottom:0.4rem;cursor:pointer;transition:color 0.2s}
+.footer-col a:hover{color:var(--pg-accent)}
+.footer-bottom{max-width:1200px;margin:0 auto;border-top:1px solid var(--pg-soft);padding-top:1.25rem;display:flex;justify-content:space-between}
+.footer-bottom p{font-size:0.73rem;color:var(--pg-muted)}
+
+/* Terms overlay */
+.terms-overlay{
+  position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:2000;
+  display:flex;align-items:center;justify-content:center;padding:2rem;
+  opacity:0;pointer-events:none;transition:opacity 0.2s;
+}
+.terms-overlay.open{opacity:1;pointer-events:auto}
+.terms-box{
+  background:#fff;border-radius:20px;max-width:580px;width:100%;
+  max-height:80vh;overflow-y:auto;padding:2rem;position:relative;
+  box-shadow:0 20px 60px rgba(0,0,0,0.2);
+}
+.terms-box h3{font-family:var(--display);font-size:1.4rem;font-weight:700;color:#1a1a2e;margin-bottom:1.25rem}
+.terms-box h4{font-size:0.88rem;color:#6c3fc5;margin:1rem 0 0.4rem;font-weight:700}
+.terms-box p{font-size:0.82rem;color:#555;line-height:1.7}
+.terms-close{position:absolute;top:1rem;right:1rem;background:#f0f0f0;border:none;width:30px;height:30px;border-radius:50%;cursor:pointer;font-size:0.9rem;display:flex;align-items:center;justify-content:center}
+
+/* REVEAL */
+.reveal{opacity:0;transform:translateY(20px);transition:opacity 0.55s,transform 0.55s}
+.reveal.visible{opacity:1;transform:none}
+
+@media(max-width:900px){
+  .hero-inner{grid-template-columns:1fr}
+  .hero-right{display:none}
+  .float-books{display:none}
+  .cart-layout{grid-template-columns:1fr}
+  .bundle-grid{grid-template-columns:1fr}
+  .footer-inner{grid-template-columns:1fr}
+  .astat-grid{grid-template-columns:repeat(2,1fr)}
+  .feature-cards{grid-template-columns:1fr}
+}
+@media(max-width:600px){
+  .admin-sidebar{display:none}
+}
+</style>
+</head>
+<body>
+
+<!-- PAGE LOADER -->
+<div id="pageLoader">
+  <div class="loader-logo">Nurse<em>Vault</em><span>™</span></div>
+  <div class="loader-ring">
+    <svg viewBox="0 0 36 36">
+      <circle class="loader-track" cx="18" cy="18" r="14"/>
+      <circle class="loader-arc" cx="18" cy="18" r="14"/>
+    </svg>
+  </div>
+  <div class="loader-dots"><div class="ldot"></div><div class="ldot"></div><div class="ldot"></div></div>
+  <div class="loader-text">Loading your resources…</div>
+</div>
+
+<!-- NAV -->
+<nav>
+  <div class="logo" onclick="nav('home')">Nurse<em>Vault</em><span>™</span></div>
+  <div class="nav-links">
+    <button class="nav-link active" id="nl-home" onclick="nav('home')">Home</button>
+    <button class="nav-link" id="nl-shop" onclick="nav('shop')">Resources</button>
+    <button class="nav-link" id="nl-bundles" onclick="nav('bundles')">Bundles</button>
+    <button class="nav-link" id="nl-faq" onclick="nav('faq')">FAQ</button>
+    <button class="nav-link nav-cart" id="nl-cart" onclick="nav('cart')">
+      🛒 Cart
+      <span class="cart-badge" id="cartBadge">0</span>
+    </button>
+  </div>
+</nav>
+
+<!-- ═══ HOME ═══ -->
+<div class="page active" id="page-home">
+<div class="offer-bar">🎓 <strong>2026 CAT Season</strong> — Notes KSh 77 · Questions KSh 99 · Buy both for any unit, save 20% automatically</div>
+
+<section class="hero">
+  <div class="blob blob1"></div>
+  <div class="blob blob2"></div>
+  <div class="blob blob3"></div>
+
+  <!-- Floating medical images -->
+  <div class="float-books">
+    <div class="fbook fb1" style="--rot:-6deg"><img src="https://images.pexels.com/photos/4386467/pexels-photo-4386467.jpeg?auto=compress&cs=tinysrgb&w=300" alt=""></div>
+    <div class="fbook fb2" style="--rot:5deg"><img src="https://images.pexels.com/photos/3938022/pexels-photo-3938022.jpeg?auto=compress&cs=tinysrgb&w=300" alt=""></div>
+    <div class="fbook fb3" style="--rot:-4deg"><img src="https://images.pexels.com/photos/5214956/pexels-photo-5214956.jpeg?auto=compress&cs=tinysrgb&w=300" alt=""></div>
+    <div class="fbook fb4" style="--rot:7deg"><img src="https://images.pexels.com/photos/3683074/pexels-photo-3683074.jpeg?auto=compress&cs=tinysrgb&w=300" alt=""></div>
+  </div>
+
+  <div class="hero-inner">
+    <div class="hero-left">
+      <div class="hero-badge"><span class="badge-dot"></span> Semester 2 · 2026</div>
+      <h1>
+        Study<br>
+        <span class="italic">Smarter.</span><br>
+        <span class="light">Score Higher.</span>
+      </h1>
+      <p class="hero-desc">Real notes. Real questions. Built from your actual lecture content — not random internet stuff. Get what you need to pass your CATs.</p>
+      <div class="hero-btns">
+        <button class="btn-fill" onclick="nav('shop')">Browse Resources →</button>
+        <button class="btn-outline" onclick="nav('bundles')">🎯 See Bundles</button>
+      </div>
+      <div class="trust-row">
+        <div class="trust-chip">✅ Free to browse</div>
+        <div class="trust-chip">📲 M-Pesa payment</div>
+        <div class="trust-chip">⚡ Instant download</div>
+      </div>
+    </div>
+
+    <!-- DEVICE MOCKUPS -->
+    <div class="hero-right">
+      <!-- MacBook -->
+      <div class="macbook">
+        <div class="mb-body">
+          <div class="mb-screen">
+            <div class="mb-bar">
+              <div class="dot dr"></div><div class="dot dy"></div><div class="dot dg"></div>
+              <div class="mb-url"><span>nursevault.co.ke</span></div>
+            </div>
+            <div class="mb-content">
+              <div class="mb-card">
+                <img src="https://images.pexels.com/photos/4386467/pexels-photo-4386467.jpeg?auto=compress&cs=tinysrgb&w=200" alt="physiology">
+                <div class="mb-card-label">📄 Notes</div>
+                <div class="mb-card-title">Physiology II Review Notes</div>
+                <div class="mb-card-price">KSh 77</div>
+                <div class="mb-card-btn">Add to Cart</div>
+              </div>
+              <div class="mb-card">
+                <img src="https://images.pexels.com/photos/3938022/pexels-photo-3938022.jpeg?auto=compress&cs=tinysrgb&w=200" alt="">
+                <div class="mb-card-label">❓ Questions</div>
+                <div class="mb-card-title">Anatomy II Question Bank</div>
+                <div class="mb-card-price" style="color:#e05c00">KSh 99</div>
+                <div class="mb-card-btn" style="background:#e05c00">Add to Cart</div>
+              </div>
+              <div class="mb-card">
+                <img src="https://images.pexels.com/photos/5214956/pexels-photo-5214956.jpeg?auto=compress&cs=tinysrgb&w=200" alt="">
+                <div class="mb-card-label">📄 Notes</div>
+                <div class="mb-card-title">Nursing II Review Notes</div>
+                <div class="mb-card-price">KSh 77</div>
+                <div class="mb-card-btn">Add to Cart</div>
+              </div>
+              <div class="mb-card" style="background:#fff8f0;border-color:#ffd4a8">
+                <img src="https://images.pexels.com/photos/3683074/pexels-photo-3683074.jpeg?auto=compress&cs=tinysrgb&w=200" alt="">
+                <div class="mb-card-label" style="color:#e05c00">🎯 Bundle</div>
+                <div class="mb-card-title">Full CAT Bundle — All 6 Units</div>
+                <div class="mb-card-price" style="color:#e05c00">KSh 349</div>
+                <div class="mb-card-btn" style="background:#e05c00">Get Bundle</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="mb-base"></div>
+        <div class="mb-foot"></div>
+        <div class="mb-shadow"></div>
+      </div>
+
+      <!-- iPad -->
+      <div class="ipad">
+        <div class="ipad-body">
+          <div class="ipad-btn-side"></div>
+          <div class="ipad-screen">
+            <div class="ipad-bar"><span>NurseVault™</span></div>
+            <div class="ipad-content">
+              <div class="ipad-row">
+                <img src="https://images.pexels.com/photos/3683074/pexels-photo-3683074.jpeg?auto=compress&cs=tinysrgb&w=100" alt="pharmacology">
+                <div class="ipad-info">
+                  <div class="lbl">📄 Notes</div>
+                  <div class="ttl">Pharmacology Notes</div>
+                  <div class="pr">KSh 77</div>
+                </div>
+              </div>
+              <div class="ipad-row">
+                <img src="https://images.pexels.com/photos/2280571/pexels-photo-2280571.jpeg?auto=compress&cs=tinysrgb&w=100" alt="">
+                <div class="ipad-info">
+                  <div class="lbl" style="color:#e05c00">❓ Q-Bank</div>
+                  <div class="ttl">Biochemistry Questions</div>
+                  <div class="pr" style="color:#e05c00">KSh 99</div>
+                </div>
+              </div>
+              <div class="ipad-row" style="background:#fff8f0;border-color:#ffd4a8">
+                <img src="https://images.pexels.com/photos/7176026/pexels-photo-7176026.jpeg?auto=compress&cs=tinysrgb&w=100" alt="">
+                <div class="ipad-info">
+                  <div class="lbl" style="color:#6c3fc5">🎯 Bundle</div>
+                  <div class="ttl">Full Bundle</div>
+                  <div class="pr" style="color:#6c3fc5">KSh 349</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- iPhone -->
+      <div class="iphone">
+        <div class="iphone-body">
+          <div class="iphone-btn"></div>
+          <div class="iphone-screen">
+            <div class="iphone-notch"><div class="iphone-pill"></div></div>
+            <div class="iphone-content">
+              <div class="iphone-header">Order Confirmed</div>
+              <div class="iphone-card">
+                <div class="lbl">Order #NV0091</div>
+                <div class="val">Physiology Notes</div>
+              </div>
+              <div class="iphone-card">
+                <div class="lbl">Amount Paid</div>
+                <div class="money">KSh 77.00</div>
+              </div>
+              <div class="iphone-card">
+                <div class="lbl">M-Pesa</div>
+                <div class="val">0712 *** *** ✓</div>
+              </div>
+              <div class="iphone-pay">⬇ Download Ready</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Stats -->
+<div class="stats-strip">
+  <div class="stats-strip-inner">
+    <div class="sstat reveal"><span class="sstat-num">6</span><span class="sstat-label">Units Covered</span></div>
+    <div class="sstat reveal"><span class="sstat-num">300+</span><span class="sstat-label">Practice MCQs</span></div>
+    <div class="sstat reveal"><span class="sstat-num">KSh 77</span><span class="sstat-label">Notes from only</span></div>
+    <div class="sstat reveal"><span class="sstat-num">2026</span><span class="sstat-label">CAT Edition</span></div>
+  </div>
+</div>
+
+<!-- Feature Strip — Green Professional -->
+<div class="feature-strip">
+  <div class="feature-strip-inner">
+    <div class="fs-eyebrow reveal">What You Get</div>
+    <h2 class="fs-title reveal">Everything You Need.<br><em>Nothing You Don't.</em></h2>
+    <p class="fs-sub reveal">CAT-aligned resources built from real lecture content — not copied from the internet. Study what matters.</p>
+    <div class="feature-cards">
+      <div class="fc reveal">
+        <div class="fc-icon">📄</div>
+        <h4>Review Notes — KSh 77</h4>
+        <p>Comprehensive, structured notes for each unit. Topics mapped directly to your CAT objectives. Print-ready PDF, annotate freely.</p>
+        <span class="fc-pill">✓ Lecture-aligned</span>
+      </div>
+      <div class="fc reveal">
+        <div class="fc-icon">❓</div>
+        <h4>Question Banks — KSh 99</h4>
+        <p>50 MCQs + 10 short answer questions per unit with full rationales. Know why each answer is right — not just what it is.</p>
+        <span class="fc-pill">✓ 50 MCQs + 10 SAQs</span>
+      </div>
+      <div class="fc reveal">
+        <div class="fc-icon">🎯</div>
+        <h4>Full Bundle — KSh 349</h4>
+        <p>All 6 units. Notes and questions combined. One payment, everything in one download. Best value for CAT season.</p>
+        <span class="fc-pill">✓ Save 67% vs individual</span>
+      </div>
+      <div class="fc reveal">
+        <div class="fc-icon">📲</div>
+        <h4>M-Pesa Payment</h4>
+        <p>Pay with M-Pesa STK push via Paystack. Secure, instant, no card needed. Works on any phone.</p>
+        <span class="fc-pill">✓ Instant STK push</span>
+      </div>
+      <div class="fc reveal">
+        <div class="fc-icon">⚡</div>
+        <h4>Instant Download</h4>
+        <p>The moment payment clears, your personalized PDF is ready. No waiting. No emails. Right there on your screen.</p>
+        <span class="fc-pill">✓ No delay</span>
+      </div>
+      <div class="fc reveal">
+        <div class="fc-icon">🔒</div>
+        <h4>Watermarked to You</h4>
+        <p>Your name is embedded in every download. Sharing is traceable. Keeps it fair for everyone who pays for access.</p>
+        <span class="fc-pill">✓ Your name on every page</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <div class="footer-logo">Nurse<em>Vault</em><span>™</span></div>
+      <p>Study resources for nursing students who are serious about their results.</p>
+    </div>
+    <div class="footer-col">
+      <h5>Resources</h5>
+      <a onclick="nav('shop')">Review Notes — KSh 77</a>
+      <a onclick="nav('shop')">Question Banks — KSh 99</a>
+      <a onclick="nav('bundles')">CAT Bundle — KSh 349</a>
+    </div>
+    <div class="footer-col">
+      <h5>Info</h5>
+      <a onclick="nav('faq')">FAQ</a>
+      <a onclick="openTerms()">Terms & Conditions</a>
+      <a onclick="nav('admin')">Admin</a>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p>© 2026 NurseVault. All rights reserved.</p>
+    <p>🔒 M-Pesa secured by Paystack</p>
+  </div>
+</footer>
+</div><!-- /home -->
+
+<!-- ═══ SHOP ═══ -->
+<div class="page" id="page-shop">
+<div class="offer-bar" style="background:#c2185b">🌸 16 resources across 6 units — Notes KSh 77 · Questions KSh 99 · Instant download after payment</div>
+<div class="shop-hero">
+  <div class="pill pill-pink">📚 All Resources</div>
+  <div class="shop-hero-text">
+    <h1>Notes & Questions<br><em>for Every Unit</em></h1>
+    <p>Six units. Notes and question banks for each. Buy what you need, download immediately.</p>
+  </div>
+</div>
+<div class="filter-bar">
+  <div style="display:flex;gap:8px">
+    <div class="ftab active" onclick="filterProducts('all',this)">All</div>
+    <div class="ftab" onclick="filterProducts('notes',this)">📄 Notes</div>
+    <div class="ftab" onclick="filterProducts('questions',this)">❓ Questions</div>
+    <div class="ftab" onclick="filterProducts('anatomy',this)">Anatomy II</div>
+    <div class="ftab" onclick="filterProducts('physio',this)">Med. Physiology II</div>
+    <div class="ftab" onclick="filterProducts('nursing',this)">Fundamentals</div>
+    <div class="ftab" onclick="filterProducts('pharma',this)">Clinical Pharm.</div>
+    <div class="ftab" onclick="filterProducts('biochem',this)">Biochemistry</div>
+    <div class="ftab" onclick="filterProducts('psych',this)">Psychology</div>
+  </div>
+  <span class="count-label" id="countLabel">28 resources</span>
+</div>
+<div class="products-grid" id="productsGrid"></div>
+
+<!-- ── GOOGLE ADSENSE SLOT ──
+     Once your site is live and AdSense is approved, replace the comment below
+     with your actual AdSense code. The slot will appear between the shop and footer.
+     Example AdSense snippet (replace with your Publisher ID & Slot ID):
+  <ins class="adsbygoogle"
+       style="display:block;margin:2rem auto;max-width:900px"
+       data-ad-client="ca-pub-XXXXXXXXXXXXXXXX"
+       data-ad-slot="XXXXXXXXXX"
+       data-ad-format="auto"
+       data-full-width-responsive="true"></ins>
+  <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+-->
+<div id="adsense-shop-slot" style="max-width:900px;margin:0 auto 1.5rem;padding:0 5%">
+  <!-- AdSense will go here when live -->
+</div>
+<footer>
+  <div class="footer-inner">
+    <div class="footer-brand"><div class="footer-logo">Nurse<em>Vault</em><span>™</span></div></div>
+    <div class="footer-col"><h5>Pages</h5><a onclick="nav('bundles')">Bundles</a><a onclick="nav('faq')">FAQ</a></div>
+    <div class="footer-col"><h5>Info</h5><a onclick="openTerms()">Terms</a><a onclick="nav('admin')">Admin</a></div>
+  </div>
+  <div class="footer-bottom"><p>© 2026 NurseVault</p><p>🔒 Secured by Paystack</p></div>
+</footer>
+</div><!-- /shop -->
+
+<!-- ═══ CART ═══ -->
+<div class="page" id="page-cart">
+<div class="offer-bar" style="background:#6c3fc5">💜 Your order is safe — M-Pesa secured via Paystack · Instant download after payment</div>
+
+<div id="cartListView">
+  <div class="cart-top">
+    <h1>Your <em>Cart</em></h1>
+    <p>Review your items then proceed to checkout</p>
+  </div>
+  <div class="cart-layout">
+    <div class="cart-items-list" id="cartItemsList"></div>
+    <div class="cart-summary-card" id="cartSummaryCard">
+      <div class="summary-head">Order Summary</div>
+      <div id="summaryRows"></div>
+      <div id="discountPill"></div>
+      <div class="total-box">
+        <span class="total-label">Total</span>
+        <span class="total-val" id="totalDisplay">KSh 0</span>
+      </div>
+      <button class="checkout-btn" id="checkoutBtn" onclick="goCheckout()">Checkout →</button>
+      <p style="font-size:0.7rem;color:#9d8ec4;text-align:center;margin-top:8px">🔒 M-Pesa · Instant download</p>
+    </div>
+  </div>
+</div>
+
+<div id="checkoutView" style="display:none">
+  <div style="padding:2rem 5% 0;max-width:580px;margin:0 auto">
+    <button class="back-link" onclick="backToCart()">← Back to Cart</button>
+  </div>
+  <div class="checkout-wrap">
+    <div class="checkout-card">
+      <div id="checkoutFormWrap">
+        <div class="co-title">Complete Your Purchase</div>
+        <div class="co-sub">One-time payment · Instant access · Watermarked to you</div>
+        <div class="order-mini" id="orderMini"></div>
+        <div class="discount-bar" id="discountBar">🎉 20% combo discount applied!</div>
+        <div class="form-group">
+          <label>Full Name (for watermark)</label>
+          <input type="text" id="buyerName" placeholder="e.g. Jane Wanjiru Mwangi">
+        </div>
+        <div class="form-group">
+          <label>M-Pesa Phone Number</label>
+          <input type="tel" id="buyerPhone" placeholder="07XX XXX XXX">
+        </div>
+        <div class="form-group">
+          <label>Email Address (receipt)</label>
+          <input type="email" id="buyerEmail" placeholder="you@email.com">
+        </div>
+        <div class="terms-row">
+          <input type="checkbox" id="termsCheck">
+          <span>I agree to the <a onclick="openTerms()">Terms & Conditions</a>. All sales final.</span>
+        </div>
+        <button class="pay-btn" id="payBtn" onclick="processPayment()">🔒 Pay with M-Pesa · STK Push</button>
+        <p style="font-size:0.7rem;color:#9d8ec4;text-align:center;margin-top:8px">An STK push will be sent to your phone. Enter your PIN to confirm.</p>
+      </div>
+      <div class="success-box" id="successBox">
+        <div class="success-icon">🎉</div>
+        <h3>Payment Confirmed!</h3>
+        <p>Your documents are ready, <strong id="successName"></strong>. They're watermarked with your name — please keep them personal.</p>
+        <button class="dl-btn" onclick="doDownload()">⬇ Download Your Resources</button>
+        <p style="font-size:0.7rem;color:#9d8ec4;margin-top:1rem">Receipt sent to your email.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<footer style="background:rgba(245,243,254,0.8);border-top-color:#d4c8f8">
+  <div class="footer-inner">
+    <div class="footer-brand"><div class="footer-logo">Nurse<em>Vault</em><span>™</span></div></div>
+    <div class="footer-col"><h5>Shop</h5><a onclick="nav('shop')">Resources</a><a onclick="nav('bundles')">Bundles</a></div>
+    <div class="footer-col"><h5>Info</h5><a onclick="nav('faq')">FAQ</a><a onclick="openTerms()">Terms</a></div>
+  </div>
+  <div class="footer-bottom"><p>© 2026 NurseVault</p><p>🔒 Secured by Paystack</p></div>
+</footer>
+</div><!-- /cart -->
+
+<!-- ═══ BUNDLES ═══ -->
+<div class="page" id="page-bundles">
+<div class="offer-bar" style="background:#e05c00">🎯 Best value — Get everything you need for one price. Instant download.</div>
+<div class="bundles-top">
+  <div class="pill pill-peach">🎯 Best Value</div>
+  <h1>One Price. <em>Everything</em>.</h1>
+  <p>For students who don't want to leave anything to chance. All units. Notes and questions. One payment.</p>
+</div>
+<div class="bundle-grid">
+  <div class="bcard featured">
+    <div class="bcard-star-banner">⭐ Best Value — Most Popular</div>
+    <div class="bcard-icon">🎯</div>
+    <div class="bcard-title">CAT Review Bundle</div>
+    <div class="bcard-sub">All 6 units. Notes and question banks. Everything you need for your Semester 2 CATs in one download.</div>
+    <ul class="bcard-includes">
+      <li>Review Notes for all 6 units</li>
+      <li>Question Banks for all 6 units</li>
+      <li>300 MCQs (50 per unit) with full rationales</li>
+      <li>60 short answer questions (10 per unit)</li>
+      <li>Physiology, Anatomy, Pharmacology, Biochemistry, Nursing & Psychology</li>
+      <li>Watermarked PDF — personalized to you</li>
+    </ul>
+    <div class="bundle-price-row">
+      <span class="bp-main" id="bpMain">KSh 349</span>
+      <span class="bp-orig" id="bpOrig">KSh 1,056</span>
+    </div>
+    <div class="bp-save" id="bpSave">You save KSh 707 — 67% off individual prices</div>
+    <button class="bcard-btn" onclick="addBundle()">🎯 Get Full Bundle →</button>
+  </div>
+  <div class="bcard">
+    <div class="bcard-lock">🔒</div>
+    <div class="bcard-icon">📚</div>
+    <div class="bcard-title">Semester Pack + Past Papers</div>
+    <div class="bcard-sub">Everything in the CAT bundle, plus past paper compilations and predicted exam questions for end-semester.</div>
+    <ul class="bcard-includes">
+      <li>Everything in CAT Review Bundle</li>
+      <li>Past paper compilations</li>
+      <li>Predicted exam questions</li>
+      <li>End-semester coverage</li>
+      <li>Priority support</li>
+    </ul>
+    <div class="bundle-price-row"><span class="bp-main">Coming Soon</span></div>
+    <div class="bp-save">Launching before end-semester exams</div>
+    <button class="bcard-btn soon">🔒 Coming Soon</button>
+  </div>
+</div>
+<footer style="background:rgba(255,248,240,0.9);border-top-color:#ffd4a8">
+  <div class="footer-inner">
+    <div class="footer-brand"><div class="footer-logo">Nurse<em>Vault</em><span>™</span></div></div>
+    <div class="footer-col"><h5>Shop</h5><a onclick="nav('shop')">Resources</a></div>
+    <div class="footer-col"><h5>Info</h5><a onclick="nav('faq')">FAQ</a><a onclick="openTerms()">Terms</a></div>
+  </div>
+  <div class="footer-bottom"><p>© 2026 NurseVault</p><p>🔒 Secured by Paystack</p></div>
+</footer>
+</div><!-- /bundles -->
+
+<!-- ═══ FAQ ═══ -->
+<div class="page" id="page-faq">
+<div class="offer-bar" style="background:#0369a1">💡 Have a question not answered here? Reach out or check our resources page.</div>
+<div class="faq-top">
+  <div class="pill pill-sky">❓ FAQ</div>
+  <h1>Questions? <em>We've got you.</em></h1>
+  <p>Everything you need to know before you buy. Honest answers, no fluff.</p>
+</div>
+<div class="faq-list" id="faqList"></div>
+<footer style="background:rgba(240,248,255,0.9);border-top-color:#bae6fd">
+  <div class="footer-inner">
+    <div class="footer-brand"><div class="footer-logo">Nurse<em>Vault</em><span>™</span></div><p>Premium study resources for nursing students.</p></div>
+    <div class="footer-col"><h5>Resources</h5><a onclick="nav('shop')">Review Notes</a><a onclick="nav('bundles')">Bundles</a></div>
+    <div class="footer-col"><h5>Info</h5><a onclick="openTerms()">Terms</a><a onclick="nav('admin')">Admin</a></div>
+  </div>
+  <div class="footer-bottom"><p>© 2026 NurseVault</p><p>🔒 Secured by Paystack</p></div>
+</footer>
+</div><!-- /faq -->
+
+<!-- ═══ ADMIN ═══ -->
+<div class="page" id="page-admin">
+<div id="adminLogin">
+  <div class="admin-login">
+    <div class="al-card">
+      <div class="al-lock">🔐</div>
+      <h2>Admin Access</h2>
+      <p>Enter your password to manage products, view transactions, and edit content.</p>
+      <input class="al-input" type="password" id="adminPw" placeholder="••••••••" onkeydown="if(event.key==='Enter')checkPw()">
+      <button class="al-btn" onclick="checkPw()">Enter Dashboard</button>
+      <div class="al-err" id="adminErr">❌ Wrong password. Try again.</div>
+      <br><button onclick="nav('home')" style="background:none;border:none;color:#7c6aab;cursor:pointer;font-size:0.8rem;margin-top:1rem;font-family:var(--body)">← Back to site</button>
+    </div>
+  </div>
+</div>
+<div class="admin-dash" id="adminDash">
+  <div class="admin-sidebar">
+    <div class="admin-brand">
+      <h3>Nurse<em>Vault</em>™</h3>
+      <p id="adminClock2">--:--:--</p>
+    </div>
+    <div class="admin-nav">
+      <div class="alink active" onclick="panel('overview',this)">📊 Overview</div>
+      <div class="alink" onclick="panel('transactions',this)">💳 Transactions</div>
+      <div class="alink" onclick="panel('products',this)">✏️ Edit Products</div>
+      <div class="alink" onclick="panel('hero',this)">🏠 Edit Hero</div>
+      <div class="alink" onclick="panel('bundle',this)">🎯 Edit Bundle</div>
+      <div class="alink" onclick="panel('addproduct',this)">➕ Add Product</div>
+      <div class="alink" onclick="panel('flags',this)">🚩 Flags</div>
+      <div class="alink" onclick="panel('downloads',this)">⬇️ Download Logs</div>
+      <div class="alink" onclick="panel('data',this)" style="margin-top:8px;border-top:1px solid rgba(167,139,250,0.1);padding-top:8px">🗄️ Data & Reset</div>
+    </div>
+    <div class="admin-signout">
+      <button class="signout-btn" onclick="nav('home')">✕ Exit Admin</button>
+    </div>
+  </div>
+  <div class="admin-main">
+    <div class="admin-topbar">
+      <h2>Nurse<span>Vault</span> Admin</h2>
+      <span class="admin-clock" id="adminClock"></span>
+    </div>
+
+    <!-- Overview -->
+    <div class="apanel active" id="apanel-overview">
+      <div class="astat-grid">
+        <div class="astat"><div class="astat-label">Total Revenue</div><div class="astat-val av-green" id="stRev">KSh 0</div></div>
+        <div class="astat"><div class="astat-label">Total Sales</div><div class="astat-val av-purple" id="stSales">0</div></div>
+        <div class="astat"><div class="astat-label">Unique Buyers</div><div class="astat-val av-sky" id="stBuyers">0</div></div>
+        <div class="astat"><div class="astat-label">Flags</div><div class="astat-val av-red" id="stFlags">0</div></div>
+      </div>
+      <div class="atbl-card">
+        <div class="atbl-head"><h4>Recent Transactions</h4><span>Live</span></div>
+        <table><thead><tr><th>Order ID</th><th>Buyer</th><th>Product</th><th>Amount</th><th>Phone</th><th>Status</th><th>Time</th></tr></thead>
+        <tbody id="txRecent"></tbody></table>
+      </div>
+    </div>
+
+    <!-- Transactions -->
+    <div class="apanel" id="apanel-transactions">
+      <div class="atbl-card">
+        <div class="atbl-head"><h4>All Transactions</h4><span id="txCount">0 total</span></div>
+        <table><thead><tr><th>Order</th><th>Buyer</th><th>Product</th><th>Amount</th><th>Phone</th><th>Email</th><th>Status</th><th>Time</th></tr></thead>
+        <tbody id="txAll"></tbody>
+      </div>
+    </div>
+
+    <!-- Edit Products -->
+    <div class="apanel" id="apanel-products">
+      <h3 style="font-family:var(--display);font-size:1.1rem;font-weight:700;color:#e2d9ff;margin-bottom:0.35rem">✏️ Manage Products</h3>
+      <p style="font-size:0.78rem;color:#7c6aab;margin-bottom:1rem">Edit title, description, price, category, cover image, download link, and file name. Delete products or upload replacements. All changes go live instantly.</p>
+      <!-- Filters -->
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:1.25rem">
+        <input class="ce-input" id="prodSearch" placeholder="🔍 Search by title or badge…" oninput="buildProductEditor()" style="flex:1;min-width:160px">
+        <select class="ce-input" id="prodFilterUnit" onchange="buildProductEditor()" style="width:150px;cursor:pointer">
+          <option value="all">All Units</option>
+          <option value="physio">Physiology</option>
+          <option value="anatomy">Anatomy</option>
+          <option value="pharma">Pharmacology</option>
+          <option value="biochem">Biochemistry</option>
+          <option value="nursing">Nursing</option>
+          <option value="psych">Psychology</option>
+        </select>
+        <select class="ce-input" id="prodFilterType" onchange="buildProductEditor()" style="width:150px;cursor:pointer">
+          <option value="all">All Types</option>
+          <option value="notes">📄 Notes Only</option>
+          <option value="questions">❓ Questions Only</option>
+        </select>
+      </div>
+      <div id="ceProductGrid"></div>
+    </div>
+
+    <!-- Edit Hero -->
+    <div class="apanel" id="apanel-hero">
+      <h3 style="font-family:var(--display);font-size:1.1rem;font-weight:700;color:#e2d9ff;margin-bottom:1rem">Edit Hero Section</h3>
+      <div class="config-card">
+        <div class="config-head">🏠 Homepage Hero Text</div>
+        <div class="config-form">
+          <div>
+            <div class="ce-label">Badge text</div>
+            <input class="ce-input" id="heroBadge" value="Semester 2 · 2026">
+          </div>
+          <div>
+            <div class="ce-label">Sub-description</div>
+            <input class="ce-input" id="heroSub" value="Real notes. Real questions. Built from your actual lecture content.">
+          </div>
+          <div class="span2">
+            <div class="ce-label">Offer bar text</div>
+            <input class="ce-input" id="offerBarTxt" value="🎓 2026 CAT Season — Notes KSh 77 · Questions KSh 99 · Buy both for any unit, save 20%">
+          </div>
+        </div>
+        <button class="ce-save-btn" onclick="saveHero()">Save Changes</button>
+        <span class="ce-ok" id="heroOk">✓ Updated!</span>
+      </div>
+    </div>
+
+    <!-- Edit Bundle -->
+    <div class="apanel" id="apanel-bundle">
+      <h3 style="font-family:var(--display);font-size:1.1rem;font-weight:700;color:#e2d9ff;margin-bottom:1rem">Edit Bundle Pricing</h3>
+      <div class="config-card">
+        <div class="config-head">🎯 Bundle Prices</div>
+        <div class="config-form">
+          <div>
+            <div class="ce-label">Bundle Price (KSh)</div>
+            <input class="ce-input" id="bpInput" type="number" value="349" style="font-family:var(--mono)">
+          </div>
+          <div>
+            <div class="ce-label">Individual Total (KSh)</div>
+            <input class="ce-input" id="boInput" type="number" value="1056" style="font-family:var(--mono)">
+          </div>
+        </div>
+        <button class="ce-save-btn" onclick="saveBundle()">Update Bundle</button>
+        <span class="ce-ok" id="bundleOk">✓ Updated!</span>
+      </div>
+    </div>
+
+    <!-- Add Product -->
+    <div class="apanel" id="apanel-addproduct">
+      <h3 style="font-family:var(--display);font-size:1.1rem;font-weight:700;color:#e2d9ff;margin-bottom:0.5rem">➕ Add New Product</h3>
+      <p style="font-size:0.78rem;color:#7c6aab;margin-bottom:1.5rem">Fill in the details below. Upload an image from your device and add a download link. Product goes live in the shop instantly.</p>
+      <div class="config-card">
+        <div class="config-head">📦 New Product Details</div>
+        <div class="config-form" style="grid-template-columns:1fr 1fr">
+
+          <div class="span2">
+            <div class="ce-label">Product Title</div>
+            <input class="ce-input" id="np-title" placeholder="e.g. Cardiovascular System — Review Notes">
+          </div>
+
+          <div class="span2">
+            <div class="ce-label">Description</div>
+            <textarea class="ce-input" id="np-desc" rows="2" placeholder="Brief description of what the product covers…"></textarea>
+          </div>
+
+          <div>
+            <div class="ce-label">Subject / Unit Badge</div>
+            <input class="ce-input" id="np-badge" placeholder="e.g. Physiology II">
+          </div>
+
+          <div>
+            <div class="ce-label">Subject ID (no spaces, lowercase)</div>
+            <input class="ce-input" id="np-unit" placeholder="e.g. physio">
+          </div>
+
+          <div>
+            <div class="ce-label">Type</div>
+            <select class="ce-input" id="np-type" style="cursor:pointer">
+              <option value="notes">📄 Review Notes</option>
+              <option value="questions">❓ Question Bank</option>
+            </select>
+          </div>
+
+          <div>
+            <div class="ce-label">Price (KSh)</div>
+            <input class="ce-input" id="np-price" type="number" value="77" style="font-family:var(--mono)">
+          </div>
+
+          <div class="span2">
+            <div class="ce-label">Topics / Tags (comma separated)</div>
+            <input class="ce-input" id="np-covers" placeholder="e.g. Heart Anatomy, Cardiac Cycle, Blood Pressure">
+          </div>
+
+          <!-- IMAGE UPLOAD -->
+          <div class="span2">
+            <div class="ce-label">Product Image</div>
+            <div id="np-img-dropzone" onclick="document.getElementById('np-img-file').click()" style="
+              border:2px dashed rgba(167,139,250,0.35);border-radius:10px;padding:1.25rem;
+              text-align:center;cursor:pointer;transition:border-color 0.2s;margin-bottom:6px;
+              background:rgba(255,255,255,0.03);
+            " onmouseenter="this.style.borderColor='rgba(167,139,250,0.7)'" onmouseleave="this.style.borderColor='rgba(167,139,250,0.35)'">
+              <div id="np-img-preview-wrap" style="display:none;margin-bottom:8px">
+                <img id="np-img-preview" style="max-height:80px;border-radius:6px;object-fit:cover;max-width:100%" alt="preview">
+              </div>
+              <div id="np-img-placeholder">
+                <div style="font-size:1.5rem;margin-bottom:4px">🖼️</div>
+                <div style="font-size:0.78rem;color:#c4b5fd;font-weight:600">Click to upload image</div>
+                <div style="font-size:0.68rem;color:#7c6aab;margin-top:2px">JPG, PNG, WEBP — max 2MB</div>
+              </div>
+            </div>
+            <input type="file" id="np-img-file" accept="image/*" style="display:none" onchange="handleImgUpload(this)">
+            <p style="font-size:0.66rem;color:#7c6aab">Or paste an image URL instead:</p>
+            <input class="ce-input" id="np-img-url" placeholder="https://images.pexels.com/photos/..." style="margin-top:4px">
+          </div>
+
+          <!-- DOWNLOAD LINK -->
+          <div class="span2">
+            <div class="ce-label">Download Link (Google Drive direct link)</div>
+            <input class="ce-input" id="np-link" placeholder="https://drive.google.com/uc?export=download&id=...">
+            <p style="font-size:0.68rem;color:#7c6aab;margin-top:4px">💡 Use Google Drive "Manage versions → Upload new version" to update the file without changing this link. Customers always get the latest automatically.</p>
+          </div>
+
+        </div>
+        <button class="ce-save-btn" onclick="addNewProduct()" style="margin-top:1rem;padding:10px 24px;font-size:0.84rem">➕ Add Product to Shop</button>
+        <span class="ce-ok" id="np-ok">✓ Product added to shop!</span>
+        <span id="np-err" style="font-size:0.72rem;color:#f87171;margin-left:8px;display:none"></span>
+      </div>
+
+      <div id="customProductList" style="margin-top:1.5rem"></div>
+    </div>
+
+    <!-- Download Logs -->
+    <div class="apanel" id="apanel-downloads">
+      <div class="atbl-card">
+        <div class="atbl-head">
+          <h4>⬇️ Download Logs</h4>
+          <span id="dlCount">Loading…</span>
+        </div>
+        <table><thead><tr><th>Customer ID</th><th>Name</th><th>Email</th><th>File Downloaded</th><th>Time</th></tr></thead>
+        <tbody id="downloadRows"></tbody></table>
+      </div>
+    </div>
+
+        <!-- Flags -->
+    <div class="apanel" id="apanel-flags">
+      <div class="atbl-card">
+        <div class="atbl-head"><h4>Flagged Activity</h4></div>
+        <table><thead><tr><th>Order ID</th><th>Buyer</th><th>Reason</th><th>Time</th></tr></thead>
+        <tbody id="flagRows"><tr><td colspan="4" style="text-align:center;padding:2rem;color:#7c6aab">No flags. All clear 🎉</td></tr></tbody>
+      </div>
+    </div>
+
+    <!-- Data & Reset -->
+    <div class="apanel" id="apanel-data">
+      <h3 style="font-family:var(--display);font-size:1.1rem;font-weight:700;color:#e2d9ff;margin-bottom:0.5rem">🗄️ Data & Reset</h3>
+      <p style="font-size:0.78rem;color:#7c6aab;margin-bottom:1.5rem">All your edits are saved automatically in the browser. Use the options below if you need to reset.</p>
+      <div class="config-card" style="display:flex;flex-direction:column;gap:1rem">
+        <div>
+          <div class="ce-label" style="margin-bottom:6px">Product Edits</div>
+          <p style="font-size:0.75rem;color:#9d8ec4;margin-bottom:8px">All product name, description, topic, price, and download link changes are saved here. Resetting will restore the original built-in products (custom-added products will also be removed).</p>
+          <button onclick="resetProducts()" style="background:rgba(248,113,113,0.12);border:1px solid rgba(248,113,113,0.25);color:#f87171;padding:9px 18px;border-radius:8px;font-size:0.8rem;cursor:pointer;font-family:var(--body)">🗑️ Reset All Product Edits</button>
+        </div>
+        <div>
+          <div class="ce-label" style="margin-bottom:6px">Hero & Offer Bar</div>
+          <button onclick="resetHero()" style="background:rgba(248,113,113,0.12);border:1px solid rgba(248,113,113,0.25);color:#f87171;padding:9px 18px;border-radius:8px;font-size:0.8rem;cursor:pointer;font-family:var(--body)">🗑️ Reset Hero Text</button>
+        </div>
+        <div>
+          <div class="ce-label" style="margin-bottom:6px">Bundle Pricing</div>
+          <button onclick="resetBundle()" style="background:rgba(248,113,113,0.12);border:1px solid rgba(248,113,113,0.25);color:#f87171;padding:9px 18px;border-radius:8px;font-size:0.8rem;cursor:pointer;font-family:var(--body)">🗑️ Reset Bundle Prices</button>
+        </div>
+        <div style="margin-top:8px;padding-top:1rem;border-top:1px solid rgba(167,139,250,0.12)">
+          <div class="ce-label" style="margin-bottom:6px;color:#f87171">⚠ Reset Everything</div>
+          <button onclick="resetAll()" style="background:rgba(248,113,113,0.2);border:1.5px solid rgba(248,113,113,0.4);color:#f87171;padding:10px 20px;border-radius:8px;font-size:0.82rem;cursor:pointer;font-weight:700;font-family:var(--body)">🔄 Reset All Saved Data</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</div><!-- /admin -->
+
+<!-- TERMS -->
+<div class="terms-overlay" id="termsOverlay">
+  <div class="terms-box">
+    <button class="terms-close" onclick="closeTerms()">✕</button>
+    <h3>Terms & Conditions</h3>
+    <h4>1. Digital Products</h4>
+    <p>All products are digital study resources. Upon payment you receive a personal, non-transferable license for educational use only.</p>
+    <h4>2. No Refunds</h4>
+    <p>All sales are final once the product has been accessed or downloaded. Read product descriptions carefully before buying.</p>
+    <h4>3. Watermarking</h4>
+    <p>Every download is watermarked with your name and transaction ID. Sharing or reselling is strictly prohibited and traceable.</p>
+    <h4>4. Intellectual Property</h4>
+    <p>All materials are the intellectual property of NurseVault. Resources are compiled from lecture content, academic sources, and AI-assisted formatting.</p>
+    <h4>5. Payment</h4>
+    <p>Processed via M-Pesa STK push through Paystack. NurseVault does not store your PIN.</p>
+    <h4>6. Disclaimer</h4>
+    <p>Resources are supplementary study aids. NurseVault is not liable for academic outcomes.</p>
+  </div>
+</div>
+
+<script>
+// ── LOADER ──
+window.addEventListener('load', () => {
+  setTimeout(() => {
+    document.getElementById('pageLoader').classList.add('hidden');
+  }, 1800);
+});
+
+// ── PAGE THEMES ──
+const themes = {
+  home:    {bg:'#f0f7f2',bg2:'#e3f0e8',accent:'#2d7a4f',accent2:'#5ab97a',soft:'#c8e6d0',text:'#1a2e22',muted:'#6b8f78',border:'rgba(45,122,79,0.18)',card:'#fff'},
+  shop:    {bg:'#fdf4f7',bg2:'#fce8f0',accent:'#c2185b',accent2:'#e91e8c',soft:'#f8bbd9',text:'#3d0e1e',muted:'#8b4d64',border:'rgba(194,24,91,0.18)',card:'#fff'},
+  cart:    {bg:'#f5f3fe',bg2:'#ede8fc',accent:'#6c3fc5',accent2:'#9c6ef5',soft:'#d4c8f8',text:'#2d1b69',muted:'#7c6aab',border:'rgba(108,63,197,0.18)',card:'#fff'},
+  bundles: {bg:'#fff8f0',bg2:'#feecd8',accent:'#e05c00',accent2:'#ff8c42',soft:'#ffd4a8',text:'#3d1800',muted:'#8b4d2a',border:'rgba(224,92,0,0.18)',card:'#fff'},
+  faq:     {bg:'#f0f8ff',bg2:'#e0f2fe',accent:'#0369a1',accent2:'#38bdf8',soft:'#bae6fd',text:'#0c2f50',muted:'#3d7a9c',border:'rgba(3,105,161,0.18)',card:'#fff'},
+  admin:   {bg:'#1a1625',bg2:'#231d35',accent:'#a78bfa',accent2:'#c4b5fd',soft:'#4c3a7a',text:'#e2d9ff',muted:'#9d8ec4',border:'rgba(167,139,250,0.18)',card:'#231d35'},
+};
+
+function applyTheme(id) {
+  const t = themes[id] || themes.home;
+  const r = document.documentElement.style;
+  r.setProperty('--pg-bg', t.bg);
+  r.setProperty('--pg-bg2', t.bg2);
+  r.setProperty('--pg-accent', t.accent);
+  r.setProperty('--pg-accent2', t.accent2);
+  r.setProperty('--pg-soft', t.soft);
+  r.setProperty('--pg-text', t.text);
+  r.setProperty('--pg-muted', t.muted);
+  r.setProperty('--pg-border', t.border);
+  r.setProperty('--pg-card', t.card);
+  document.body.style.background = t.bg;
+  document.body.style.color = t.text;
+}
+
+// ── DATA ──
+const ADMIN_PW = 'NurseVault@2026!'; // ← CHANGE THIS to your own password before going live
+let transactions = [];
+
+// ── PERSISTENCE HELPERS ──
+const NV_CATALOG_VERSION = 'v12'; // bump this when catalog changes to clear stale data
+(function() {
+  try {
+    if (localStorage.getItem('nv_catalog_version') !== NV_CATALOG_VERSION) {
+      localStorage.removeItem('nv_products');
+      localStorage.setItem('nv_catalog_version', NV_CATALOG_VERSION);
+    }
+  } catch(e) {}
+})();
+function saveAllProducts() {
+  try {
+    localStorage.setItem('nv_products', JSON.stringify(products));
+  } catch(e) {}
+}
+function loadSavedProducts() {
+  try {
+    const saved = localStorage.getItem('nv_products');
+    if (!saved) return;
+    const arr = JSON.parse(saved);
+    if (!Array.isArray(arr) || arr.length === 0) return;
+    // Merge saved data into products array — match by id
+    arr.forEach(savedP => {
+      const idx = products.findIndex(p => p.id === savedP.id);
+      if (idx >= 0) {
+        // Update editable fields only
+        products[idx].title = savedP.title;
+        products[idx].desc = savedP.desc;
+        products[idx].covers = savedP.covers;
+        products[idx].price = savedP.price;
+        products[idx].badge = savedP.badge;
+        if (savedP.downloadLink !== undefined) products[idx].downloadLink = savedP.downloadLink;
+      } else if (savedP.isCustom) {
+        // Re-add custom products that were added by admin
+        products.push(savedP);
+        customProducts.push(savedP);
+      }
+    });
+  } catch(e) {}
+}
+function saveHeroData() {
+  try {
+    const badge = document.getElementById('heroBadge')?.value;
+    const sub = document.getElementById('heroSub')?.value;
+    const bar = document.getElementById('offerBarTxt')?.value;
+    if (badge) localStorage.setItem('nv_hero_badge', badge);
+    if (sub) localStorage.setItem('nv_hero_sub', sub);
+    if (bar) localStorage.setItem('nv_offer_bar', bar);
+  } catch(e) {}
+}
+function loadHeroData() {
+  try {
+    const badge = localStorage.getItem('nv_hero_badge');
+    const sub = localStorage.getItem('nv_hero_sub');
+    const bar = localStorage.getItem('nv_offer_bar');
+    const bd = document.querySelector('.hero-badge');
+    if (bd && badge) bd.innerHTML = `<span class="badge-dot"></span> ${badge}`;
+    const sd = document.querySelector('.hero-desc');
+    if (sd && sub) sd.textContent = sub;
+    const ob = document.querySelector('.offer-bar');
+    if (ob && bar) ob.innerHTML = bar;
+    // Also populate admin inputs if they exist
+    const hb = document.getElementById('heroBadge'); if (hb && badge) hb.value = badge;
+    const hs = document.getElementById('heroSub'); if (hs && sub) hs.value = sub;
+    const obt = document.getElementById('offerBarTxt'); if (obt && bar) obt.value = bar;
+  } catch(e) {}
+}
+function saveBundleData() {
+  try {
+    const bp = document.getElementById('bpInput')?.value;
+    const bo = document.getElementById('boInput')?.value;
+    if (bp) localStorage.setItem('nv_bundle_price', bp);
+    if (bo) localStorage.setItem('nv_bundle_orig', bo);
+  } catch(e) {}
+}
+function loadBundleData() {
+  try {
+    const bp = localStorage.getItem('nv_bundle_price');
+    const bo = localStorage.getItem('nv_bundle_orig');
+    if (!bp && !bo) return;
+    const bpVal = parseInt(bp) || 349;
+    const boVal = parseInt(bo) || 1056;
+    const save = boVal - bpVal;
+    const pct = Math.round((save/boVal)*100);
+    const m = document.getElementById('bpMain'); if (m) m.textContent = 'KSh ' + bpVal;
+    const o = document.getElementById('bpOrig'); if (o) o.textContent = 'KSh ' + boVal.toLocaleString();
+    const sv = document.getElementById('bpSave'); if (sv) sv.textContent = `You save KSh ${save.toLocaleString()} — ${pct}% off individual prices`;
+    window._bundlePrice = bpVal;
+    const bpi = document.getElementById('bpInput'); if (bpi && bp) bpi.value = bp;
+    const boi = document.getElementById('boInput'); if (boi && bo) boi.value = bo;
+  } catch(e) {}
+}
+let cart = [];
+let checkoutItems = [];
+let filterMode = 'all';
+
+const products = [
+
+  // ── ANATOMY II ──────────────────────────────────────────────────────────────
+  // Product 1: Cranial Nerves, Ear & Eye — Review Notes
+  {
+    id:'p_anat_cns',
+    unit:'anatomy', type:'notes', price:77,
+    badge:'Anatomy II',
+    title:'Cranial Nerves, Ear & Eye — Review Notes',
+    desc:'Comprehensive notes covering the 12 cranial nerves, structure and function of the ear, and anatomy of the eye. CAT-focused and lecture-aligned.',
+    covers:['12 Cranial Nerves','Eye Anatomy','Ear Anatomy','Clinical Correlations'],
+    img:'https://images.pexels.com/photos/7176026/pexels-photo-7176026.jpeg?auto=compress&cs=tinysrgb&w=600',
+    downloadLink:'https://drive.google.com/file/d/1WFr59p1E7_SASxzruw7YhmWlgui4Clz4/view?usp=drive_link',
+    fileName:'Cranial_Nerves_Ear_Eye_Notes.pdf'
+  },
+
+  // Product 2: Cranial Nerves, Ear & Eye — Question Bank
+  {
+    id:'q_anat_cns',
+    unit:'anatomy', type:'questions', price:99,
+    badge:'Anatomy II',
+    title:'Cranial Nerves, Ear & Eye — Question Bank',
+    desc:'50 MCQs + 10 SAQs on cranial nerves, the ear, and the eye with full rationales explaining every answer.',
+    covers:['50 MCQs','10 SAQs','Cranial Nerves','Eye & Ear'],
+    img:'https://images.pexels.com/photos/7176026/pexels-photo-7176026.jpeg?auto=compress&cs=tinysrgb&w=600',
+    downloadLink:'https://drive.google.com/file/d/1E3qYAxh5uGFkwcCRWnn9Wjxo48rlh65m/view?usp=drive_link',
+    fileName:'Cranial_Nerves_Ear_Eye_Questions.pdf'
+  },
+
+  // Product 3: Integumentary System — Review Notes
+  {
+    id:'p_anat_integ',
+    unit:'anatomy', type:'notes', price:77,
+    badge:'Anatomy II',
+    title:'Integumentary System — Review Notes',
+    desc:'Detailed notes on the skin and its appendages — layers of the epidermis and dermis, hair follicles, sebaceous and sweat glands, and clinical nursing implications.',
+    covers:['Skin Layers','Hair & Nails','Sebaceous Glands','Sweat Glands','Clinical Notes'],
+    img:'https://images.pexels.com/photos/4226769/pexels-photo-4226769.jpeg?auto=compress&cs=tinysrgb&w=600',
+    downloadLink:'https://drive.google.com/file/d/1Nf4VPsLrFZDB9qIRFPiTbfGbIAu8vd4g/view?usp=drive_link',
+    fileName:'Integumentary_System_Anatomy_Notes.pdf'
+  },
+
+  // Product 4: Integumentary System — Question Bank
+  {
+    id:'q_anat_integ',
+    unit:'anatomy', type:'questions', price:99,
+    badge:'Anatomy II',
+    title:'Integumentary System — Question Bank',
+    desc:'50 MCQs + 10 SAQs on the integumentary system with full rationales. Covers skin structure, functions, appendages, and common clinical scenarios.',
+    covers:['50 MCQs','10 SAQs','Integumentary System','Full Rationales'],
+    img:'https://images.pexels.com/photos/4226769/pexels-photo-4226769.jpeg?auto=compress&cs=tinysrgb&w=600',
+    downloadLink:'https://drive.google.com/file/d/1cSGhsPGCtpmg9-BRku8KfgHt9X16PPad/view?usp=drive_link',
+    fileName:'Integumentary_System_Questions.pdf'
+  },
+
+  // ── MEDICAL PHYSIOLOGY II ────────────────────────────────────────────────────
+  // Product 5: GIT Physiology — Review Notes
+  {
+    id:'p_physio_git',
+    unit:'physio', type:'notes', price:77,
+    badge:'Medical Physiology II',
+    title:'GIT Physiology — Review Notes',
+    desc:'Complete revision notes on gastrointestinal tract physiology — motility, secretion, digestion, absorption, and the neural/hormonal regulation of the gut.',
+    covers:['GIT Motility','Gastric Secretion','Digestion & Absorption','Neural Control','Hormonal Regulation'],
+    img:'https://images.pexels.com/photos/5214958/pexels-photo-5214958.jpeg?auto=compress&cs=tinysrgb&w=600',
+    downloadLink:'https://drive.google.com/file/d/144j5jeWSLyQxDG5-TNV_sfxEp5O04G4e/view?usp=drive_link',
+    fileName:'GIT_Physiology_Notes.pdf'
+  },
+
+  // Product 6: GIT Physiology — Question Bank
+  {
+    id:'q_physio_git',
+    unit:'physio', type:'questions', price:99,
+    badge:'Medical Physiology II',
+    title:'GIT Physiology — Question Bank',
+    desc:'50 MCQs + 10 SAQs on GIT physiology with full rationales. Tests your knowledge of gut motility, secretion, digestion, and clinical physiology.',
+    covers:['50 MCQs','10 SAQs','GIT Physiology','Full Rationales'],
+    img:'https://images.pexels.com/photos/5214958/pexels-photo-5214958.jpeg?auto=compress&cs=tinysrgb&w=600',
+    downloadLink:'https://drive.google.com/file/d/1qj0YdOU5YwwAXVI9E9qDtdti75lKP4-r/view?usp=drive_link',
+    fileName:'GIT_Physiology_Questions.pdf'
+  },
+
+  // ── BIOCHEMISTRY ─────────────────────────────────────────────────────────────
+  // Product 7: Biochemistry — Review Notes
+  {
+    id:'p_biochem',
+    unit:'biochem', type:'notes', price:77,
+    badge:'Biochemistry',
+    title:'Biochemistry — Review Notes',
+    desc:'Structured notes covering proteins, amino acids, enzymes, metabolism pathways, genetic disorders, and biochemical concepts relevant to nursing practice.',
+    covers:['Proteins & Amino Acids','Enzymes','Metabolism','Genetic Disorders','Nucleic Acids'],
+    img:'https://images.pexels.com/photos/2280571/pexels-photo-2280571.jpeg?auto=compress&cs=tinysrgb&w=600',
+    downloadLink:'https://drive.google.com/file/d/1e0_TiWZQ4Y_T48-nQEGtxUK9ljOAxiy_/view?usp=drive_link',
+    fileName:'Biochemistry_Notes.pdf'
+  },
+
+  // Product 8: Biochemistry — Question Bank
+  {
+    id:'q_biochem',
+    unit:'biochem', type:'questions', price:99,
+    badge:'Biochemistry',
+    title:'Biochemistry — Question Bank',
+    desc:'50 MCQs + 10 SAQs on biochemistry with full rationales. Covers proteins, metabolism, enzymes, genetic disorders, and clinical biochemistry.',
+    covers:['50 MCQs','10 SAQs','Biochemistry','Full Rationales'],
+    img:'https://images.pexels.com/photos/2280571/pexels-photo-2280571.jpeg?auto=compress&cs=tinysrgb&w=600',
+    downloadLink:'https://drive.google.com/file/d/165EPAYn1Vnz-FjbG-PHTdrsG1w2A5r3t/view?usp=drive_link',
+    fileName:'Biochemistry_Questions.pdf'
+  },
+
+  // ── CLINICAL PHARMACOLOGY ─────────────────────────────────────────────────────
+  // Product 9: Pharmacodynamics — Review Notes
+  {
+    id:'p_pharma_dyn',
+    unit:'pharma', type:'notes', price:77,
+    badge:'Clinical Pharmacology',
+    title:'Pharmacodynamics — Review Notes',
+    desc:'Clear revision notes on pharmacodynamics — how drugs act on the body, receptor theory, drug-receptor interactions, dose-response relationships, agonists, antagonists, and toxicity.',
+    covers:['Receptor Theory','Drug-Receptor Interactions','Dose-Response','Agonists & Antagonists','Drug Toxicity'],
+    img:'https://images.pexels.com/photos/3683074/pexels-photo-3683074.jpeg?auto=compress&cs=tinysrgb&w=600',
+    downloadLink:'https://drive.google.com/file/d/1cSGhsPGCtpmg9-BRku8KfgHt9X16PPad/view?usp=drive_link',
+    fileName:'Pharmacodynamics_Notes.pdf'
+  },
+
+  // Product 10: Pharmacodynamics — Question Bank
+  {
+    id:'q_pharma_dyn',
+    unit:'pharma', type:'questions', price:99,
+    badge:'Clinical Pharmacology',
+    title:'Pharmacodynamics — Question Bank',
+    desc:'50 MCQs + 10 SAQs on pharmacodynamics with full rationales. Tests receptor theory, drug interactions, dose-response, and clinical pharmacology applications.',
+    covers:['50 MCQs','10 SAQs','Pharmacodynamics','Full Rationales'],
+    img:'https://images.pexels.com/photos/3683074/pexels-photo-3683074.jpeg?auto=compress&cs=tinysrgb&w=600',
+    downloadLink:'https://drive.google.com/file/d/1cSGhsPGCtpmg9-BRku8KfgHt9X16PPad/view?usp=drive_link',
+    fileName:'Pharmacodynamics_Questions.pdf'
+  },
+
+  // Product 11: Pharmacokinetics — Review Notes
+  {
+    id:'p_pharma_kin',
+    unit:'pharma', type:'notes', price:77,
+    badge:'Clinical Pharmacology',
+    title:'Pharmacokinetics — Review Notes',
+    desc:'Focused notes on how the body handles drugs — Absorption, Distribution, Metabolism, and Excretion (ADME), bioavailability, half-life, and clinical dosing principles.',
+    covers:['Absorption','Distribution','Metabolism','Excretion (ADME)','Bioavailability','Half-Life'],
+    img:'https://images.pexels.com/photos/3862132/pexels-photo-3862132.jpeg?auto=compress&cs=tinysrgb&w=600',
+    downloadLink:'https://drive.google.com/file/d/1cSGhsPGCtpmg9-BRku8KfgHt9X16PPad/view?usp=drive_link',
+    fileName:'Pharmacokinetics_Notes.pdf'
+  },
+
+  // Product 12: Pharmacokinetics — Question Bank
+  {
+    id:'q_pharma_kin',
+    unit:'pharma', type:'questions', price:99,
+    badge:'Clinical Pharmacology',
+    title:'Pharmacokinetics — Question Bank',
+    desc:'50 MCQs + 10 SAQs on pharmacokinetics with full rationales. Covers ADME, bioavailability, drug half-life, and clinical dosing calculations.',
+    covers:['50 MCQs','10 SAQs','Pharmacokinetics','ADME','Full Rationales'],
+    img:'https://images.pexels.com/photos/3862132/pexels-photo-3862132.jpeg?auto=compress&cs=tinysrgb&w=600',
+    downloadLink:'https://drive.google.com/file/d/1cSGhsPGCtpmg9-BRku8KfgHt9X16PPad/view?usp=drive_link',
+    fileName:'Pharmacokinetics_Questions.pdf'
+  },
+
+  // ── PSYCHOLOGY & COUNSELLING ──────────────────────────────────────────────────
+  // Product 13: Psychology & Counselling — Review Notes
+  {
+    id:'p_psych',
+    unit:'psych', type:'notes', price:77,
+    badge:'Psychology & Counselling',
+    title:'Psychology & Counselling — Review Notes',
+    desc:'Revision notes on foundational psychology and counselling skills for nursing — major theories, mental health, therapeutic communication, and counselling approaches.',
+    covers:['Psychological Theories','Mental Health','Therapeutic Communication','Counselling Approaches','Nurse-Patient Relationship'],
+    img:'https://images.pexels.com/photos/4386467/pexels-photo-4386467.jpeg?auto=compress&cs=tinysrgb&w=600',
+    downloadLink:'https://drive.google.com/file/d/1cSGhsPGCtpmg9-BRku8KfgHt9X16PPad/view?usp=drive_link',
+    fileName:'Psychology_Counselling_Notes.pdf'
+  },
+
+  // Product 14: Psychology & Counselling — Question Bank
+  {
+    id:'q_psych',
+    unit:'psych', type:'questions', price:99,
+    badge:'Psychology & Counselling',
+    title:'Psychology & Counselling — Question Bank',
+    desc:'50 MCQs + 10 SAQs on psychology and counselling with full rationales. Covers theories, mental health nursing, therapeutic relationships, and communication skills.',
+    covers:['50 MCQs','10 SAQs','Psychology','Counselling','Full Rationales'],
+    img:'https://images.pexels.com/photos/4386467/pexels-photo-4386467.jpeg?auto=compress&cs=tinysrgb&w=600',
+    downloadLink:'https://drive.google.com/file/d/1RfhkKH8muuuhEPGXONN6zgGsyXXYp3Md/view?usp=drive_link',
+    fileName:'Psychology_Counselling_Questions.pdf'
+  },
+
+  // ── FUNDAMENTALS OF NURSING ───────────────────────────────────────────────────
+  // Product 15: Fundamentals of Nursing — Review Notes
+  {
+    id:'p_nursing',
+    unit:'nursing', type:'notes', price:77,
+    badge:'Fundamentals of Nursing',
+    title:'Fundamentals of Nursing — Review Notes',
+    desc:'Complete revision notes on fundamentals of nursing — patient assessment, vital signs, nursing process, infection control, wound care, medication administration, and documentation.',
+    covers:['Nursing Process','Patient Assessment','Vital Signs','Infection Control','Wound Care','Medication Administration'],
+    img:'https://images.pexels.com/photos/5214956/pexels-photo-5214956.jpeg?auto=compress&cs=tinysrgb&w=600',
+    downloadLink:'https://drive.google.com/file/d/1Zz-kXN_b93pCAOaDkkbYxEr8swOjSHso/view?usp=drive_link',
+    fileName:'Fundamentals_of_Nursing_Notes.pdf'
+  },
+
+  // Product 16: Fundamentals of Nursing — Question Bank
+  {
+    id:'q_nursing',
+    unit:'nursing', type:'questions', price:99,
+    badge:'Fundamentals of Nursing',
+    title:'Fundamentals of Nursing — Question Bank',
+    desc:'50 MCQs + 10 SAQs on fundamentals of nursing with full rationales. Covers the nursing process, patient care, clinical skills, and documentation.',
+    covers:['50 MCQs','10 SAQs','Nursing Process','Clinical Skills','Full Rationales'],
+    img:'https://images.pexels.com/photos/5214956/pexels-photo-5214956.jpeg?auto=compress&cs=tinysrgb&w=600',
+    downloadLink:'https://drive.google.com/file/d/1aZOes8dw0x35Qq1kIhnq8cvkC3MTov0Q/view?usp=drive_link',
+    fileName:'Fundamentals_of_Nursing_Questions.pdf'
+  },
+
+];
+
+const faqs = [
+  {q:'How are these resources made?',a:"We start from your lecturer's actual PowerPoints and handouts, cross-reference with medical textbooks and online academic sources, then use AI to format and organize clearly. A human reviews everything to check accuracy and relevance before it goes live."},
+  {q:'What do Review Notes include?',a:'A complete, CAT-focused PDF covering all major topics for that unit. Clear structure, mnemonics where useful, clinical notes, and summaries. Designed to be printed and annotated. KSh 77 per unit.'},
+  {q:'What do Question Banks include?',a:'MCQs with four options each, short answer questions, and detailed rationales explaining why each answer is right or wrong. Not just the answer — the reasoning. KSh 99 per unit.'},
+  {q:'Can I get a refund?',a:'No. Digital products are delivered immediately, so all sales are final. Read the product description carefully before buying — the full contents are listed on every card.'},
+  {q:'Why is my name on the document?',a:'Every download is watermarked with your name and a unique transaction ID to prevent sharing. If a document circulates without authorization, it can be traced. Keep your downloads personal.'},
+  {q:'How do I pay?',a:"M-Pesa only, via Paystack. You'll get an STK push on your phone — enter your M-Pesa PIN to confirm. No card needed."},
+  {q:'How fast do I get the file?',a:'Immediately. The moment your payment clears, a download button appears right on the checkout screen. No waiting, no email delays.'},
+  {q:'Can I print the documents?',a:'Yes — they\'re designed for printing. Clean layout, plenty of margin space for notes. Print once, study anywhere.'},
+];
+
+// ── NAVIGATION ──
+function nav(id) {
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.getElementById('page-'+id).classList.add('active');
+  document.querySelectorAll('.nav-link').forEach(l=>l.classList.remove('active'));
+  const nl = document.getElementById('nl-'+id);
+  if(nl) nl.classList.add('active');
+  applyTheme(id);
+  window.scrollTo(0,0);
+  if(id==='shop') renderShop();
+  if(id==='faq' && !document.getElementById('faqList').children.length) renderFAQ();
+  if(id==='cart') renderCart();
+  if(id==='admin') resetAdmin();
+  setTimeout(initReveal, 100);
+}
+
+// ── SHOP ──
+function renderShop() {
+  const grid = document.getElementById('productsGrid');
+  if(!grid) return;
+  const f = filterMode;
+  const units = ['physio','anatomy','pharma','biochem','nursing','psych'];
+  const list = f==='all' ? products : units.includes(f) ? products.filter(p=>p.unit===f) : products.filter(p=>p.type===f);
+  document.getElementById('countLabel').textContent = list.length + ' resources';
+  grid.innerHTML = list.map(p => {
+    const inCart = cart.some(c=>c.id===p.id);
+    const isNote = p.type==='notes';
+    return `<div class="pcard">
+      <div class="pcard-img">
+        <img src="${p.img}" alt="${p.title}" loading="lazy">
+        <div class="pcard-overlay"></div>
+        <span class="type-badge ${isNote?'badge-notes':'badge-questions'}">${isNote?'📄 Review Notes':'❓ Question Bank'}</span>
+        <span class="unit-tag">${p.badge}</span>
+      </div>
+      <div class="pcard-body">
+        <div class="pcard-title">${p.title}</div>
+        <div class="pcard-desc">${p.desc}</div>
+        <div class="pcard-tags">${p.covers.map(c=>`<span class="ptag">${c}</span>`).join('')}</div>
+        <div class="pcard-footer">
+          <div class="pcard-price-wrap">
+            <div class="pcard-price ${isNote?'price-notes':'price-questions'}"><span style="font-size:0.65rem;font-weight:400;opacity:0.6">KSh </span>${p.price}</div>
+            <span class="price-sub">One-time · Instant download</span>
+          </div>
+          <button class="add-btn ${isNote?'add-notes':'add-questions'}${inCart?' added':''}" id="ab-${p.id}" onclick="toggleCart(event,'${p.id}')">${inCart?'✓ Added':'+ Add'}</button>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function filterProducts(mode, el) {
+  filterMode = mode;
+  document.querySelectorAll('.ftab').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  renderShop();
+}
+
+// ── CART ──
+function toggleCart(e, id) {
+  e.stopPropagation();
+  const p = products.find(x=>x.id===id);
+  if(!p) return;
+  const idx = cart.findIndex(c=>c.id===id);
+  if(idx>=0) cart.splice(idx,1);
+  else cart.push({...p});
+  updateBadge();
+  renderShop();
+}
+
+function addBundle() {
+  const price = parseInt(document.getElementById('bpInput')?.value)||349;
+  const already = cart.findIndex(c=>c.id==='bundle_cat');
+  if(already<0) cart.push({id:'bundle_cat',unit:'bundle',type:'bundle',title:'CAT Review Bundle — All 6 Units',price,badge:'All Units',img:'https://images.pexels.com/photos/5214956/pexels-photo-5214956.jpeg?auto=compress&cs=tinysrgb&w=200',downloadLink:'https://drive.google.com/drive/folders/1qclRw7OAsAqPsf8bPs_VK12d5p4MzPyI?usp=drive_link'});
+  updateBadge();
+  nav('cart');
+}
+
+function updateBadge() {
+  const b = document.getElementById('cartBadge');
+  if(cart.length>0){ b.style.display='flex'; b.textContent=cart.length; }
+  else b.style.display='none';
+}
+
+function calcOrder() {
+  const sub = cart.reduce((s,c)=>s+c.price,0);
+  const units = {};
+  cart.forEach(c=>{ if(c.unit && c.unit!=='bundle'){ units[c.unit]=units[c.unit]||[]; units[c.unit].push(c.type); }});
+  let disc = 0;
+  Object.values(units).forEach(types=>{ if(types.includes('notes')&&types.includes('questions')) disc+=Math.round((77+99)*0.2); });
+  return {sub, disc, total: sub-disc};
+}
+
+function renderCart() {
+  const list = document.getElementById('cartItemsList');
+  const {sub,disc,total} = calcOrder();
+  if(!list) return;
+
+  if(cart.length===0){
+    list.innerHTML=`<div class="cart-empty-wrap"><div class="icon">🛒</div><h3>Your cart is empty</h3><p>Browse resources and add what you need.</p><button class="btn-fill" onclick="nav('shop')" style="margin:0 auto;display:flex">Browse Resources →</button></div>`;
+    if(document.getElementById('cartSummaryCard')) document.getElementById('cartSummaryCard').style.display='none';
+    return;
+  }
+  if(document.getElementById('cartSummaryCard')) document.getElementById('cartSummaryCard').style.display='block';
+
+  list.innerHTML = cart.map(c=>{
+    const isN = c.type==='notes'; const isB = c.type==='bundle';
+    return `<div class="ci">
+      <img class="ci-img" src="${c.img||products[0].img}" alt="${c.title}">
+      <div class="ci-info">
+        <div class="ci-type ${isB?'b':isN?'n':'q'}">${isB?'🎯 Bundle':isN?'📄 Review Notes':'❓ Question Bank'}</div>
+        <div class="ci-title">${c.title}</div>
+        <span class="ci-badge">${c.badge}</span>
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:flex-end;gap:8px;flex-shrink:0">
+        <div class="ci-price">KSh ${c.price}</div>
+        <button class="ci-rm" onclick="removeItem('${c.id}')">Remove</button>
+      </div>
+    </div>`;
+  }).join('');
+
+  // Summary
+  document.getElementById('summaryRows').innerHTML = cart.map(c=>`
+    <div class="srow"><span class="sl" style="font-size:0.78rem">${c.title}</span><span class="sv">KSh ${c.price}</span></div>`).join('');
+  document.getElementById('discountPill').innerHTML = disc>0 ?
+    `<div class="discount-pill">🎉 Combo discount (20% off): -KSh ${disc}</div>` : '';
+  document.getElementById('totalDisplay').textContent = 'KSh '+total;
+  document.getElementById('checkoutBtn').disabled = cart.length===0;
+}
+
+function removeItem(id) {
+  cart = cart.filter(c=>c.id!==id);
+  updateBadge();
+  renderCart();
+  renderShop();
+}
+
+function goCheckout() {
+  checkoutItems = [...cart];
+  document.getElementById('cartListView').style.display='none';
+  document.getElementById('checkoutView').style.display='block';
+  buildOrderMini();
+}
+
+function backToCart() {
+  document.getElementById('cartListView').style.display='block';
+  document.getElementById('checkoutView').style.display='none';
+  document.getElementById('checkoutFormWrap').style.display='block';
+  document.getElementById('successBox').classList.remove('show');
+}
+
+function buildOrderMini() {
+  const {sub,disc,total} = calcOrder();
+  const rows = checkoutItems.map(c=>`<div class="om-row"><span class="n">${c.title}</span><span class="p">KSh ${c.price}</span></div>`).join('');
+  document.getElementById('orderMini').innerHTML = rows
+    + (disc>0?`<div class="om-row"><span class="n">Combo discount (20%)</span><span class="p" style="color:#2d7a4f">-KSh ${disc}</span></div>`:'')
+    + `<div class="om-total"><span>Total</span><span class="p">KSh ${total}</span></div>`;
+  if(disc>0){ const db=document.getElementById('discountBar'); db.style.display='block'; db.textContent=`🎉 You save KSh ${disc} with the combo discount!`; }
+}
+
+function processPayment() {
+  const name = document.getElementById('buyerName').value.trim();
+  const phone = document.getElementById('buyerPhone').value.trim();
+  const email = document.getElementById('buyerEmail').value.trim();
+  const ok = document.getElementById('termsCheck').checked;
+  if(!name){ alert('Enter your full name.'); return; }
+  if(!phone||phone.length<9){ alert('Enter a valid M-Pesa number.'); return; }
+  if(!email||!email.includes('@')){ alert('Enter a valid email address.'); return; }
+  if(!ok){ alert('Please agree to the Terms & Conditions.'); return; }
+
+  const {sub,disc,total} = calcOrder();
+  const amountKobo = total * 100; // Paystack uses kobo/cents (for KES, multiply by 100)
+  const oid = 'NV' + Date.now().toString().slice(-6);
+
+  const btn = document.getElementById('payBtn');
+  btn.disabled = true; btn.textContent = '⏳ Loading payment…';
+
+  const handler = PaystackPop.setup({
+    key: 'pk_live_ce4bbdd09a1882d0eeb1aa99666f2e3503c0bf10',
+    email: email,
+    amount: amountKobo,
+    currency: 'KES',
+    ref: oid,
+    metadata: {
+      custom_fields: [
+        { display_name: 'Customer Name', variable_name: 'customer_name', value: name },
+        { display_name: 'Phone Number', variable_name: 'phone_number', value: phone },
+        { display_name: 'Items', variable_name: 'items', value: checkoutItems.map(i=>i.title).join(', ') }
+      ]
+    },
+    callback: function(response) {
+      // Payment successful
+      const now = new Date().toLocaleString('en-KE');
+      const customerId = response.reference || oid;
+      checkoutItems.forEach(item => {
+        const tx = {id:customerId, name, phone, email, product:item.title, amount:item.price, status:'success', time:now, customerId};
+        transactions.push(tx);
+        // Log download record
+        logDownload({customerId, name, email, product:item.title, time:now});
+      });
+      updateAdminStats();
+      window._buyerName = name;
+      window._orderId = customerId;
+      window._buyerEmail = email;
+      btn.disabled = false; btn.textContent = '🔒 Pay with M-Pesa · STK Push';
+      document.getElementById('checkoutFormWrap').style.display = 'none';
+      document.getElementById('successName').textContent = name;
+      document.getElementById('successBox').classList.add('show');
+      cart = []; updateBadge();
+    },
+    onClose: function() {
+      btn.disabled = false; btn.textContent = '🔒 Pay with M-Pesa · STK Push';
+    }
+  });
+  handler.openIframe();
+}
+
+// ── DOWNLOAD TRACKING ──
+function logDownload(record) {
+  try {
+    const logs = JSON.parse(localStorage.getItem('nv_download_logs') || '[]');
+    logs.push(record);
+    localStorage.setItem('nv_download_logs', JSON.stringify(logs));
+  } catch(e) {}
+}
+function getDownloadLogs() {
+  try { return JSON.parse(localStorage.getItem('nv_download_logs') || '[]'); } catch(e) { return []; }
+}
+
+
+
+// ── ADD NEW PRODUCT ──
+let customProducts = [];
+// Load saved product edits from localStorage (runs after products array is defined below)
+let _npImgBase64 = ''; // holds base64 of uploaded image
+
+function handleImgUpload(input) {
+  const file = input.files[0];
+  if (!file) return;
+  if (file.size > 2 * 1024 * 1024) {
+    alert('Image is too large. Please use an image under 2MB.');
+    input.value = '';
+    return;
+  }
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    _npImgBase64 = e.target.result; // data:image/...;base64,...
+    const preview = document.getElementById('np-img-preview');
+    const previewWrap = document.getElementById('np-img-preview-wrap');
+    const placeholder = document.getElementById('np-img-placeholder');
+    if (preview) { preview.src = _npImgBase64; previewWrap.style.display = 'block'; }
+    if (placeholder) placeholder.style.display = 'none';
+  };
+  reader.readAsDataURL(file);
+}
+
+function addNewProduct() {
+  const g = id => document.getElementById(id)?.value?.trim();
+  const title = g('np-title');
+  const desc = g('np-desc');
+  const badge = g('np-badge');
+  const unit = g('np-unit') || ('unit' + Date.now());
+  const type = g('np-type') || 'notes';
+  const price = parseFloat(g('np-price')) || 77;
+  const covers = (g('np-covers') || '').split(',').map(s=>s.trim()).filter(Boolean);
+  const link = g('np-link') || '';
+  const imgUrl = g('np-img-url') || '';
+
+  // Image: uploaded file takes priority, then URL, then default
+  const img = _npImgBase64 || imgUrl || 'https://images.pexels.com/photos/4386467/pexels-photo-4386467.jpeg?auto=compress&cs=tinysrgb&w=600';
+
+  const errEl = document.getElementById('np-err');
+
+  if (!title) { errEl.textContent = '⚠ Please enter a product title.'; errEl.style.display='inline'; return; }
+  if (!badge) { errEl.textContent = '⚠ Please enter a subject badge.'; errEl.style.display='inline'; return; }
+  errEl.style.display = 'none';
+
+  const newId = 'cp' + Date.now();
+  const newProduct = {id:newId, unit, type, price, badge, title, desc, covers, img, downloadLink: link, isCustom: true};
+  products.push(newProduct);
+  customProducts.push(newProduct);
+
+  // Reset form
+  ['np-title','np-desc','np-badge','np-unit','np-covers','np-img-url','np-link'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.value = '';
+  });
+  document.getElementById('np-price').value = '77';
+  document.getElementById('np-img-file').value = '';
+  _npImgBase64 = '';
+  const pw = document.getElementById('np-img-preview-wrap');
+  const ph = document.getElementById('np-img-placeholder');
+  if (pw) pw.style.display = 'none';
+  if (ph) ph.style.display = 'block';
+
+  renderShop();
+  renderCustomProductList();
+  saveAllProducts(); // persist new product
+  const ok = document.getElementById('np-ok');
+  if (ok) { ok.style.display='inline'; setTimeout(()=>ok.style.display='none', 3000); }
+}
+
+function renderCustomProductList() {
+  const wrap = document.getElementById('customProductList');
+  if (!wrap) return;
+  if (customProducts.length === 0) { wrap.innerHTML = ''; return; }
+  wrap.innerHTML = `<h4 style="font-size:0.82rem;font-weight:700;color:#c4b5fd;margin-bottom:0.75rem">✅ Your Added Products (${customProducts.length})</h4>` +
+    customProducts.map(p => `
+      <div class="ce-card" style="display:flex;gap:12px;align-items:center;padding:0.85rem 1rem">
+        <img src="${p.img}" style="width:44px;height:44px;border-radius:6px;object-fit:cover;flex-shrink:0" alt="">
+        <div style="flex:1;min-width:0">
+          <div style="font-size:0.82rem;font-weight:700;color:#e2d9ff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${p.title}</div>
+          <div style="font-size:0.7rem;color:#7c6aab;margin-top:2px">${p.badge} · ${p.type==='notes'?'📄 Notes':'❓ Questions'} · KSh ${p.price}</div>
+          ${p.downloadLink ? `<div style="font-size:0.66rem;color:#34d399;margin-top:2px">✓ Download link set</div>` : `<div style="font-size:0.66rem;color:#f87171;margin-top:2px">⚠ No download link yet</div>`}
+        </div>
+        <button onclick="removeCustomProduct('${p.id}')" style="background:rgba(248,113,113,0.12);border:1px solid rgba(248,113,113,0.2);color:#f87171;padding:5px 12px;border-radius:6px;font-size:0.72rem;cursor:pointer;font-family:var(--body);flex-shrink:0">Remove</button>
+      </div>`).join('');
+}
+
+function removeCustomProduct(id) {
+  const idx = products.findIndex(p => p.id === id);
+  if (idx >= 0) products.splice(idx, 1);
+  customProducts = customProducts.filter(p => p.id !== id);
+  saveAllProducts();
+  renderShop();
+  renderCustomProductList();
+}
+
+// ── DOWNLOAD WITH LINK SUPPORT ──
+// Opens Google Drive links directly. Generates a receipt PDF with buyer info watermark.
+function doDownload() {
+  const name = window._buyerName || 'Student';
+  const oid  = window._orderId  || 'NV000000';
+  const email = window._buyerEmail || '';
+  const dt   = new Date().toLocaleDateString('en-KE');
+
+  // Track each download
+  checkoutItems.forEach(item => {
+    logDownload({customerId: oid, name, email, product: item.title, fileName: item.fileName || item.title, time: new Date().toLocaleString('en-KE')});
+  });
+
+  // Open direct Google Drive links
+  const linkedItems = checkoutItems.filter(item => item.downloadLink);
+  linkedItems.forEach((item, i) => {
+    setTimeout(() => {
+      window.open(item.downloadLink, '_blank');
+    }, i * 600);
+  });
+
+  // Generate receipt PDF (always, as proof of purchase)
+  const {jsPDF} = window.jspdf;
+  const doc = new jsPDF();
+  doc.setFillColor(245,243,254); doc.rect(0,0,210,297,'F');
+  doc.setFontSize(22); doc.setFont(undefined,'bold'); doc.setTextColor(108,63,197);
+  doc.text('NurseVault™',20,25);
+  doc.setTextColor(45,26,105); doc.setFontSize(10); doc.setFont(undefined,'normal');
+  doc.text('Study Resources — Semester 2 · 2026 Edition',20,33);
+  doc.setDrawColor(108,63,197); doc.line(20,38,190,38);
+
+  doc.setFontSize(13); doc.setFont(undefined,'bold'); doc.setTextColor(194,24,91);
+  doc.text('Download Receipt',20,50);
+  doc.setFontSize(9); doc.setFont(undefined,'normal'); doc.setTextColor(108,63,197);
+  doc.text(`Customer: ${name}   |   Email: ${email}   |   ID: ${oid}   |   ${dt}`,20,58);
+
+  doc.setTextColor(60,40,100); doc.setFontSize(10);
+  checkoutItems.forEach((item,i)=> {
+    doc.text(`• ${item.title} — KSh ${item.price}`,20,70+i*9);
+  });
+
+  // Watermark
+  doc.setFontSize(30); doc.setFont(undefined,'bold'); doc.setTextColor(200,200,210);
+  doc.saveGraphicsState(); doc.setGState(new doc.GState({opacity:0.05}));
+  doc.text(name.toUpperCase(),105,160,{align:'center',angle:25});
+  doc.restoreGraphicsState();
+  doc.setFontSize(7); doc.setTextColor(140,140,160);
+  doc.text(`NurseVault.co.ke · ${oid} · Licensed to: ${name} (${email}) · ${dt}`,105,290,{align:'center'});
+  doc.save(`NurseVault_Receipt_${oid}.pdf`);
+}
+
+// ── RESET FUNCTIONS ──
+function resetProducts() {
+  if (!confirm('Reset all product edits? This cannot be undone.')) return;
+  try { localStorage.removeItem('nv_products'); } catch(e) {}
+  location.reload();
+}
+function resetHero() {
+  if (!confirm('Reset hero text to defaults?')) return;
+  try { localStorage.removeItem('nv_hero_badge'); localStorage.removeItem('nv_hero_sub'); localStorage.removeItem('nv_offer_bar'); } catch(e) {}
+  location.reload();
+}
+function resetBundle() {
+  if (!confirm('Reset bundle prices to defaults?')) return;
+  try { localStorage.removeItem('nv_bundle_price'); localStorage.removeItem('nv_bundle_orig'); } catch(e) {}
+  location.reload();
+}
+function resetAll() {
+  if (!confirm('Reset ALL saved data including all product edits, hero text, and bundle prices?')) return;
+  try { ['nv_products','nv_hero_badge','nv_hero_sub','nv_offer_bar','nv_bundle_price','nv_bundle_orig'].forEach(k=>localStorage.removeItem(k)); } catch(e) {}
+  location.reload();
+}
+
+// ── FAQ ──
+function renderFAQ() {
+  const c = document.getElementById('faqList');
+  if(!c) return;
+  faqs.forEach(f=>{
+    const d=document.createElement('div'); d.className='faq-item';
+    d.innerHTML=`<div class="faq-q" onclick="toggleFaq(this)"><span>${f.q}</span><span class="faq-arr">▾</span></div><div class="faq-a">${f.a}</div>`;
+    c.appendChild(d);
+  });
+}
+function toggleFaq(el){ el.classList.toggle('open'); el.nextElementSibling.classList.toggle('open'); }
+
+// ── ADMIN ──
+function resetAdmin() {
+  document.getElementById('adminLogin').style.display='block';
+  document.getElementById('adminDash').classList.remove('open');
+  document.getElementById('adminPw').value='';
+  document.getElementById('adminErr').style.display='none';
+}
+function checkPw() {
+  if(document.getElementById('adminPw').value===ADMIN_PW) {
+    document.getElementById('adminLogin').style.display='none';
+    document.getElementById('adminDash').classList.add('open');
+    updateAdminStats();
+    buildProductEditor();
+    renderCustomProductList();
+    startAdminClock();
+  } else {
+    document.getElementById('adminErr').style.display='block';
+    document.getElementById('adminPw').value='';
+  }
+}
+function panel(id,el) {
+  document.querySelectorAll('.apanel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.alink').forEach(a=>a.classList.remove('active'));
+  document.getElementById('apanel-'+id).classList.add('active');
+  el.classList.add('active');
+  if(id==='products') buildProductEditor();
+  if(id==='downloads') renderDownloadLogs();
+}
+function renderDownloadLogs() {
+  const logs = getDownloadLogs();
+  const tbody = document.getElementById('downloadRows');
+  const cnt = document.getElementById('dlCount');
+  if(cnt) cnt.textContent = logs.length + ' total downloads';
+  if(!tbody) return;
+  if(logs.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:2rem;color:#7c6aab">No downloads recorded yet.</td></tr>';
+    return;
+  }
+  tbody.innerHTML = logs.slice().reverse().map(l => `<tr>
+    <td style="font-family:var(--mono);font-size:0.72rem;color:#c4b5fd">${l.customerId}</td>
+    <td style="color:#e2d9ff">${l.name}</td>
+    <td style="font-size:0.75rem;color:#9d8ec4">${l.email}</td>
+    <td style="font-size:0.75rem;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${l.product}</td>
+    <td style="font-size:0.7rem;color:#7c6aab">${l.time}</td>
+  </tr>`).join('');
+}
+function startAdminClock() {
+  const tick=()=>{const t=new Date().toLocaleString('en-KE');['adminClock','adminClock2'].forEach(id=>{const e=document.getElementById(id);if(e)e.textContent=t})};
+  tick(); setInterval(tick,1000);
+}
+function updateAdminStats() {
+  const ok=transactions.filter(t=>t.status==='success');
+  const rev=ok.reduce((s,t)=>s+t.amount,0);
+  const buyers=[...new Set(ok.map(t=>t.phone))].length;
+  const s=id=>document.getElementById(id);
+  if(s('stRev')) s('stRev').textContent='KSh '+rev.toLocaleString();
+  if(s('stSales')) s('stSales').textContent=ok.length;
+  if(s('stBuyers')) s('stBuyers').textContent=buyers;
+  if(s('txCount')) s('txCount').textContent=transactions.length+' total';
+  const rows=transactions.slice().reverse().map(t=>`<tr>
+    <td style="font-family:var(--mono);font-size:0.72rem;color:#c4b5fd">${t.id}</td>
+    <td style="color:#e2d9ff">${t.name}</td>
+    <td style="max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:0.75rem">${t.product}</td>
+    <td style="font-family:var(--mono);color:#34d399;font-weight:700">KSh ${t.amount}</td>
+    <td>${t.phone}</td>
+    <td><span class="sbadge s-ok">paid</span></td>
+    <td style="font-size:0.7rem;color:#7c6aab">${t.time}</td>
+  </tr>`).join('') || '<tr><td colspan="7" style="text-align:center;padding:2rem;color:#7c6aab">No transactions yet.</td></tr>';
+  if(s('txRecent')) s('txRecent').innerHTML=rows;
+  if(s('txAll')) s('txAll').innerHTML=transactions.slice().reverse().map(t=>`<tr>
+    <td style="font-family:var(--mono);font-size:0.7rem;color:#c4b5fd">${t.id}</td>
+    <td style="color:#e2d9ff">${t.name}</td>
+    <td style="max-width:130px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:0.74rem">${t.product}</td>
+    <td style="font-family:var(--mono);color:#34d399;font-weight:700">KSh ${t.amount}</td>
+    <td>${t.phone}</td>
+    <td style="font-size:0.74rem">${t.email}</td>
+    <td><span class="sbadge s-ok">paid</span></td>
+    <td style="font-size:0.68rem;color:#7c6aab">${t.time}</td>
+  </tr>`).join('') || '<tr><td colspan="8" style="text-align:center;padding:2rem;color:#7c6aab">No transactions yet.</td></tr>';
+}
+function buildProductEditor() {
+  const grid = document.getElementById('ceProductGrid');
+  if(!grid) return;
+  const q  = (document.getElementById('prodSearch')?.value||'').toLowerCase().trim();
+  const uf = document.getElementById('prodFilterUnit')?.value||'all';
+  const tf = document.getElementById('prodFilterType')?.value||'all';
+  const visible = products
+    .map((p,i)=>({p,i}))
+    .filter(({p})=>{
+      if(uf!=='all'&&p.unit!==uf) return false;
+      if(tf!=='all'&&p.type!==tf) return false;
+      if(q&&!p.title.toLowerCase().includes(q)&&!(p.badge||'').toLowerCase().includes(q)) return false;
+      return true;
+    });
+  if(!visible.length){
+    grid.innerHTML='<p style="color:#7c6aab;padding:1rem;font-size:0.82rem">No products match your filters.</p>';
+    return;
+  }
+  grid.innerHTML = visible.map(({p,i})=>{
+    const isN = p.type==='notes';
+    const dl  = p.downloadLink||'';
+    const img = p.img||'';
+    const fn  = p.fileName||'';
+    return `
+<div class="ce-card" id="cecard-${i}" style="border:1px solid rgba(167,139,250,0.18);margin-bottom:1rem">
+  <!-- Header row -->
+  <div class="ce-head" style="justify-content:space-between;flex-wrap:wrap;gap:6px">
+    <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap">
+      <span style="background:${isN?'rgba(52,211,153,0.1)':'rgba(251,191,36,0.1)'};color:${isN?'#34d399':'#fbbf24'};padding:2px 9px;border-radius:10px;font-size:0.67rem;font-weight:700">${isN?'📄 Notes':'❓ Questions'}</span>
+      <span style="color:#7c6aab;font-size:0.72rem">${escHtml(p.badge)}</span>
+      ${p.isCustom?'<span style="background:rgba(167,139,250,0.15);color:#c4b5fd;padding:1px 7px;border-radius:8px;font-size:0.62rem">Custom</span>':''}
+    </div>
+    <button onclick="deleteProduct(${i})" style="background:rgba(248,113,113,0.1);border:1px solid rgba(248,113,113,0.3);color:#f87171;padding:4px 11px;border-radius:7px;font-size:0.7rem;cursor:pointer;font-family:var(--body);transition:background 0.15s" onmouseover="this.style.background='rgba(248,113,113,0.2)'" onmouseout="this.style.background='rgba(248,113,113,0.1)'">🗑 Delete Product</button>
+  </div>
+
+  <div class="ce-form" style="margin-top:0.75rem">
+    <!-- Title -->
+    <div class="span2">
+      <div class="ce-label">Product Title</div>
+      <input class="ce-input" id="ct-${i}" value="${escAttr(p.title)}">
+    </div>
+    <!-- Description -->
+    <div class="span2">
+      <div class="ce-label">Description</div>
+      <textarea class="ce-input" id="cd-${i}" rows="2">${escHtml(p.desc)}</textarea>
+    </div>
+    <!-- Topics -->
+    <div>
+      <div class="ce-label">Topics (comma-sep)</div>
+      <input class="ce-input" id="cc-${i}" value="${escAttr(p.covers.join(', '))}">
+    </div>
+    <!-- Price -->
+    <div>
+      <div class="ce-label">Price (KSh)</div>
+      <input class="ce-input" id="cp-${i}" type="number" value="${p.price}" style="font-family:var(--mono)">
+    </div>
+    <!-- Badge -->
+    <div>
+      <div class="ce-label">Unit Badge</div>
+      <input class="ce-input" id="cbadge-${i}" value="${escAttr(p.badge||'')}">
+    </div>
+    <!-- Category -->
+    <div>
+      <div class="ce-label">Category</div>
+      <select class="ce-input" id="cunit-${i}" style="cursor:pointer">
+        <option value="anatomy" ${p.unit==='anatomy'?'selected':''}>Anatomy II</option>
+        <option value="physio"  ${p.unit==='physio' ?'selected':''}>Medical Physiology II</option>
+        <option value="nursing" ${p.unit==='nursing'?'selected':''}>Fundamentals of Nursing</option>
+        <option value="pharma"  ${p.unit==='pharma' ?'selected':''}>Clinical Pharmacology</option>
+        <option value="biochem" ${p.unit==='biochem'?'selected':''}>Biochemistry</option>
+        <option value="psych"   ${p.unit==='psych'  ?'selected':''}>Psychology &amp; Counseling</option>
+      </select>
+    </div>
+
+    <!-- Cover Image -->
+    <div class="span2">
+      <div class="ce-label">🖼 Cover Image</div>
+      <div style="display:flex;gap:10px;align-items:flex-start;flex-wrap:wrap">
+        <img id="cimgprev-${i}" src="${escAttr(img)}" style="width:88px;height:62px;object-fit:cover;border-radius:7px;border:1px solid rgba(167,139,250,0.2);flex-shrink:0;display:${img?'block':'none'}" onerror="this.style.display='none'">
+        <div style="flex:1;min-width:200px">
+          <input class="ce-input" id="cimg-${i}" value="${escAttr(img)}" placeholder="https://… or upload below" style="margin-bottom:6px" oninput="liveImgPreview(${i})">
+          <label style="display:inline-flex;align-items:center;gap:6px;background:rgba(167,139,250,0.1);border:1px solid rgba(167,139,250,0.3);color:#c4b5fd;padding:5px 12px;border-radius:7px;font-size:0.72rem;cursor:pointer;font-family:var(--body)">
+            📁 Upload new cover image
+            <input type="file" accept="image/*" style="display:none" onchange="uploadCover(this,${i})">
+          </label>
+          <span style="font-size:0.63rem;color:#7c6aab;display:block;margin-top:4px">JPG / PNG / WEBP — max 2 MB</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- File Name / Rename -->
+    <div class="span2">
+      <div class="ce-label">📄 File Name (rename)</div>
+      <input class="ce-input" id="cfn-${i}" value="${escAttr(fn)}" placeholder="e.g. Anatomy_II_CNS_Notes.pdf">
+      <p style="font-size:0.63rem;color:#7c6aab;margin-top:3px">✏️ This is the display name customers see and the name used when the file is delivered. Change it anytime without touching any code.</p>
+    </div>
+
+    <!-- Download Link -->
+    <div class="span2">
+      <div class="ce-label">📎 Download Link (Google Drive / Dropbox)</div>
+      <input class="ce-input" id="cl-${i}" value="${escAttr(dl)}" placeholder="https://drive.google.com/uc?export=download&id=…">
+      <p style="font-size:0.63rem;color:#7c6aab;margin-top:3px">💡 To replace the file without changing this link: Google Drive → right-click file → Manage versions → Upload new version.</p>
+      ${dl?`<div style="font-size:0.68rem;color:#34d399;margin-top:3px">✓ Link set</div>`:`<div style="font-size:0.68rem;color:#f87171;margin-top:3px">⚠ No link yet — customers can't receive a file until this is set</div>`}
+    </div>
+
+    <!-- Replace / Upload File -->
+    <div class="span2">
+      <div class="ce-label">📤 Replace File</div>
+      <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+        <label style="display:inline-flex;align-items:center;gap:6px;background:rgba(167,139,250,0.1);border:1px solid rgba(167,139,250,0.3);color:#c4b5fd;padding:7px 14px;border-radius:7px;font-size:0.75rem;cursor:pointer;font-family:var(--body)">
+          📂 Choose file to upload
+          <input type="file" style="display:none" onchange="pickFile(this,${i})">
+        </label>
+        <span id="cpick-${i}" style="font-size:0.72rem;color:#7c6aab;font-family:var(--mono)"></span>
+      </div>
+      <p style="font-size:0.63rem;color:#7c6aab;margin-top:4px">Selecting a file auto-fills the file name above. Then paste your hosting link in the Download Link field.</p>
+    </div>
+  </div>
+
+  <!-- Save row -->
+  <div style="display:flex;align-items:center;gap:10px;margin-top:1rem;flex-wrap:wrap">
+    <button class="ce-save-btn" onclick="saveP(${i})" style="padding:8px 20px;font-size:0.82rem">💾 Save & Go Live</button>
+    <span class="ce-ok" id="co-${i}" style="display:none">✓ Saved!</span>
+  </div>
+</div>`;
+  }).join('');
+}
+
+function escAttr(s){ return String(s||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;'); }
+function escHtml(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+function liveImgPreview(i){
+  const url = document.getElementById(`cimg-${i}`)?.value;
+  const prev = document.getElementById(`cimgprev-${i}`);
+  if(!prev) return;
+  if(url){ prev.src=url; prev.style.display='block'; } else prev.style.display='none';
+}
+
+function uploadCover(input,i){
+  const file=input.files[0]; if(!file) return;
+  if(file.size>2*1024*1024){ alert('Image too large — max 2 MB'); return; }
+  const reader=new FileReader();
+  reader.onload=e=>{
+    const b64=e.target.result;
+    const inp=document.getElementById(`cimg-${i}`); if(inp) inp.value=b64;
+    const prev=document.getElementById(`cimgprev-${i}`); if(prev){ prev.src=b64; prev.style.display='block'; }
+    products[i].img=b64; saveAllProducts(); renderShop();
+  };
+  reader.readAsDataURL(file);
+}
+
+function pickFile(input,i){
+  const file=input.files[0]; if(!file) return;
+  const nameEl=document.getElementById(`cpick-${i}`);
+  if(nameEl) nameEl.textContent='📄 '+file.name;
+  // Auto-fill file name field
+  const fnEl=document.getElementById(`cfn-${i}`);
+  if(fnEl && !fnEl.value) fnEl.value=file.name;
+  // Show hosting reminder
+  const linkEl=document.getElementById(`cl-${i}`);
+  if(linkEl && !linkEl.value){
+    alert(`File selected: "${file.name}"\n\nThis app doesn't host files directly.\n\nNext step:\n1. Upload this file to Google Drive\n2. Get the shareable direct-download link\n3. Paste it in the Download Link field above\n\nThe file name has been pre-filled for you.`);
+  }
+}
+
+function deleteProduct(i){
+  const p=products[i];
+  if(!confirm(`Delete "${p.title}"?\n\nThis cannot be undone — the product will disappear from the shop immediately.`)) return;
+  const cIdx=customProducts.findIndex(c=>c.id===p.id);
+  if(cIdx>=0) customProducts.splice(cIdx,1);
+  products.splice(i,1);
+  saveAllProducts(); renderShop(); buildProductEditor(); renderCustomProductList();
+}
+
+function saveP(i) {
+  const g=id=>document.getElementById(id)?.value;
+  products[i].title    = g(`ct-${i}`)    || products[i].title;
+  products[i].desc     = g(`cd-${i}`)    || products[i].desc;
+  products[i].badge    = g(`cbadge-${i}`)|| products[i].badge;
+  products[i].unit     = g(`cunit-${i}`) || products[i].unit;
+  const cv=g(`cc-${i}`); if(cv!=null) products[i].covers=cv.split(',').map(s=>s.trim()).filter(Boolean);
+  const pr=parseFloat(g(`cp-${i}`)); if(!isNaN(pr)) products[i].price=pr;
+  const dl=g(`cl-${i}`); if(dl!=null) products[i].downloadLink=dl.trim();
+  const fn=g(`cfn-${i}`); if(fn!=null) products[i].fileName=fn.trim();
+  const im=g(`cimg-${i}`); if(im) products[i].img=im.trim();
+  saveAllProducts(); renderShop(); buildProductEditor();
+  const m=document.getElementById(`co-${i}`); if(m){m.style.display='inline';setTimeout(()=>m.style.display='none',2200)}
+}
+function saveHero() {
+  const badge=document.getElementById('heroBadge')?.value;
+  const sub=document.getElementById('heroSub')?.value;
+  const bar=document.getElementById('offerBarTxt')?.value;
+  const bd=document.querySelector('.hero-badge'); if(bd&&badge) bd.innerHTML=`<span class="badge-dot"></span> ${badge}`;
+  const sd=document.querySelector('.hero-desc'); if(sd&&sub) sd.textContent=sub;
+  const ob=document.querySelector('.offer-bar'); if(ob&&bar) ob.innerHTML=bar;
+  saveHeroData();
+  const ok=document.getElementById('heroOk'); if(ok){ok.style.display='inline';setTimeout(()=>ok.style.display='none',2200)}
+}
+function saveBundle() {
+  const bp=parseInt(document.getElementById('bpInput')?.value)||349;
+  const bo=parseInt(document.getElementById('boInput')?.value)||1056;
+  const save=bo-bp; const pct=Math.round((save/bo)*100);
+  const m=document.getElementById('bpMain'); if(m) m.textContent='KSh '+bp;
+  const o=document.getElementById('bpOrig'); if(o) o.textContent='KSh '+bo.toLocaleString();
+  const sv=document.getElementById('bpSave'); if(sv) sv.textContent=`You save KSh ${save.toLocaleString()} — ${pct}% off individual prices`;
+  window._bundlePrice=bp;
+  saveBundleData();
+  const ok=document.getElementById('bundleOk'); if(ok){ok.style.display='inline';setTimeout(()=>ok.style.display='none',2200)}
+}
+
+// ── TERMS ──
+function openTerms(){ document.getElementById('termsOverlay').classList.add('open') }
+function closeTerms(){ document.getElementById('termsOverlay').classList.remove('open') }
+
+// ── REVEAL ──
+function initReveal() {
+  const obs = new IntersectionObserver(entries=>{
+    entries.forEach(e=>{ if(e.isIntersecting) e.target.classList.add('visible') });
+  },{threshold:0.07});
+  document.querySelectorAll('.reveal').forEach(el=>{ el.classList.remove('visible'); obs.observe(el); });
+}
+
+// ── INIT ──
+loadSavedProducts();   // restore any admin edits from localStorage
+renderFAQ();
+applyTheme('home');
+loadHeroData();        // restore hero text edits
+loadBundleData();      // restore bundle price edits
+setTimeout(initReveal,200);
+</script>
+</body>
+</html>
